@@ -31,6 +31,21 @@ public class LogChannel {
     private var fileHandle: FileHandle!
     
     
+    /// Creates a new log channel with the given configuration
+    ///
+    /// - Attention: When `location` is `.file`, this initializer guarantees that the file exists and immediately opens
+    ///              a handle to it so that `log` functions can run immediately.
+    ///
+    /// - Parameters:
+    ///   - name:                  The human-readable name of the channel
+    ///   - location:              The location where the logs are channeled to
+    ///   - lowestAllowedSeverity: _optional_ - The lowest severity which will appear in this channel's logs.
+    ///                            Defaults to `info`, since that's the lowest built-in severity which users might care
+    ///                            about if they're looking at logs, but not debugging the code itself.
+    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log.
+    ///                            Defaults to `.emoji`, so humans can more easily skim the log.
+    ///
+    /// - Throws: Any error which occurs while trying to create the channel
     public init(name: String,
          location: Location,
          lowestAllowedSeverity: LogSeverity? = .info,
