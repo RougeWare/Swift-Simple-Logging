@@ -6,7 +6,9 @@
 //
 
 import Foundation
-import CoreGraphics
+#if os(iOS) || os(tvOS) || os(watchOS)
+import CoreGraphics.CGBase
+#endif
 
 
 
