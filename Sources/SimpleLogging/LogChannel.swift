@@ -83,7 +83,7 @@ public class LogChannel {
     deinit {
         fileHandle?.closeFile()
         
-        if #available(iOS 13, macOS 15, *) {
+        if #available(macOS 15, iOS 13, tvOS 13, watchOS 6, *) {
             try? fileHandle?.close()
         }
     }
