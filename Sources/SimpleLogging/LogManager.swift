@@ -17,5 +17,16 @@ public enum LogManager {
 
 
 public extension LogManager {
-    static var defaultChannels: [LogChannel] = [LogChannel(name: "Swift.print", location: .swiftPrintDefault)]
+    
+    /// The original set of default channels, kept here so we can reset the default channels
+    private static let originalDefaultChannels = [try! LogChannel(name: "Swift.print", location: .swiftPrintDefault)]
+    
+    /// The default set of channels for logging. Changing this will redirect logs which don't specify a channel
+    static var defaultChannels = originalDefaultChannels
+    
+    
+    /// Resets the default channels back to its original set of channels
+    static func resetDefaultChannels() {
+        defaultChannels = originalDefaultChannels
+    }
 }

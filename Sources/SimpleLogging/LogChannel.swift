@@ -13,16 +13,16 @@ import Foundation
 public class LogChannel {
     
     /// The human-readable name of the log channel
-    let name: String
+    public let name: String
     
     /// The location of the log channel, to which log messages will be sent
-    let location: Location
+    public let location: Location
     
     /// The lowest severity which will be pushed to this channel. All others will be discarded entirely.
-    var lowestAllowedSeverity: LogSeverity = .info
+    public var lowestAllowedSeverity: LogSeverity?
     
     /// The style of the severity part of a log line in this channel
-    let logSeverityNameStyle: SeverityNameStyle
+    public let logSeverityNameStyle: SeverityNameStyle
     
     /// The logging options to use with each message
     private let options: LoggingOptions
@@ -31,12 +31,16 @@ public class LogChannel {
     private var fileHandle: FileHandle!
     
     
-    init(name: String,
+    public init(name: String,
          location: Location,
+         lowestAllowedSeverity: LogSeverity? = .info,
          logSeverityNameStyle: SeverityNameStyle = .emoji
-    ) {
+    )
+        throws
+    {
         self.name = name
         self.location = location
+        self.lowestAllowedSeverity = lowestAllowedSeverity
         self.logSeverityNameStyle = logSeverityNameStyle
         self.options = LoggingOptions(severityStyle: logSeverityNameStyle)
         
@@ -48,7 +52,30 @@ public class LogChannel {
             break
             
         case .file(path: let path):
-            self.fileHandle = FileHandle(forWritingAtPath: path)
+            let pathUrl = URL(fileURLWithPath: path)
+            let parentDirectory = pathUrl.deletingLastPathComponent()
+            
+            do {
+                try FileManager.default.createDirectory(at: parentDirectory, withIntermediateDirectories: true, attributes: nil)
+            }
+            catch {
+                print(error)
+                assertionFailure("Could not create file parent directory: " + error.localizedDescription)
+                throw error
+            }
+            
+            guard FileManager.default.createFile(atPath: path, contents: nil, attributes: nil) else {
+                assertionFailure("Could not create file")
+                throw LogChannel.CreateError.couldNotCreateLogFile(path: path)
+            }
+            
+            do {
+                self.fileHandle = try FileHandle(forWritingTo: pathUrl)
+            }
+            catch {
+                assertionFailure("Could not create file handle pointing to \(path): " + error.localizedDescription)
+                throw error
+            }
         }
     }
     
@@ -102,7 +129,9 @@ public extension LogChannel {
     ///           a read-only volume)
     func append(_ message: LogMessageProtocol) throws {
         
-        guard message.severity >= self.lowestAllowedSeverity else {
+        if let lowestAllowedSeverity = lowestAllowedSeverity,
+            message.severity < lowestAllowedSeverity
+        {
             return
         }
         
@@ -140,5 +169,15 @@ public extension LogChannel {
     
     private func append_file(path: String, message: LogMessageProtocol) {
         print(message.entireRenderedLogLine(options: options), to: &fileHandle)
+    }
+}
+
+
+
+public extension LogChannel {
+    /// An error which might occur while attempting to create a log channel
+    enum CreateError: Error {
+        /// Thrown when you want to log to a file, but that file could not be created
+        case couldNotCreateLogFile(path: String)
     }
 }

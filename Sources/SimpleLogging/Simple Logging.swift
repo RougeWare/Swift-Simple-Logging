@@ -9,7 +9,6 @@ import Foundation
 
 
 
-
 /// The core log function, which pushes the given message to the given channels
 ///
 /// - Parameters:
