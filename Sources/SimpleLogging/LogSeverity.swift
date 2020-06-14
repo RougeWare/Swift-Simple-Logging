@@ -63,7 +63,7 @@ extension LogSeverity: Comparable {
 
 public extension LogSeverity {
     /// Verbose logging - The lowest severity; anything and everything might be logged at this level
-    static let verbose = LogSeverity(severityValue: 1,    name: (short: "v", long: "Verbose", emoji: "🗣"))
+    static let verbose = LogSeverity(severityValue: 1,    name: (short: "v", long: "Verbose", emoji: "💬"))
     
     /// Debug logging - Usually not included in user logs, but helpful messages for debugging issues in the field
     static let debug =   LogSeverity(severityValue: 2,    name: (short: "d", long: "Debug",   emoji: "👩🏾‍💻"))

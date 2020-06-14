@@ -53,3 +53,13 @@ extension UInt64: Loggable {}
 extension Float32: Loggable {}
 extension Float64: Loggable {}
 extension CGFloat: Loggable {}
+
+
+
+extension NSError: Loggable {}
+
+public extension Error {
+    func loggable() -> Loggable {
+        self as NSError
+    }
+}

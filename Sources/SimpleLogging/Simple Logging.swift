@@ -289,6 +289,53 @@ public func log(error any: Any,
 }
 
 
+/// Logs the given error (and the location where you called this function) at `error` severity to the given channels
+///
+/// - Parameters:
+///   - error:    The error to be logged
+///   - channels: _optional_ - The channels to which to log the given item
+///
+/// - Returns: The message which was logged
+@discardableResult
+@inline(__always)
+func log(error: Error,
+         to channels: [LogChannel] = LogManager.defaultChannels,
+         file: String = #file, function: String = #function, line: UInt = #line
+) -> LogMessageProtocol {
+    log(severity: .error, error.loggable(),
+        file: file, function: function, line: line,
+        to: channels)
+}
+
+
+/// Calls the given function and, if it throws an error, logs that error (and the location where you called this
+/// function) at `error` severity to the given channels, and the given backup function is called and its value is
+/// returned. If the given function does not throw an error, then its result is returned and the backup function is not
+/// called.
+///
+/// - Parameters:
+///   - dangerousCall: A function which might throw an error
+///   - channels:     _optional_ - The channels to which to log the given item
+///
+/// - Returns: The return value of either `dangerousCall` if it doesn't throw an error, or of `backup` if it does
+@inlinable
+public func log<Return>(errorIfThrows dangerousCall: @autoclosure () throws -> Return,
+                        backup: @autoclosure () -> Return,
+                        to channels: [LogChannel] = LogManager.defaultChannels,
+                        file: String = #file, function: String = #function, line: UInt = #line
+) -> Return {
+    do {
+        return try dangerousCall()
+    }
+    catch {
+        log(error: error,
+            file: file, function: function, line: line,
+            to: channels)
+        return backup()
+    }
+}
+
+
 // MARK: Fatal
 
 /// Logs the given item (and the location where you called this function) at `fatal` severity to the given channels
