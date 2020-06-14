@@ -58,9 +58,9 @@ public func log(severity: LogSeverity, _ loggable: Loggable,
     log(
         message: CodeLogMessage(
             severity: severity,
-            logLine: loggable.logStringValue,
+            message: loggable.logStringValue,
             codeLocation: CodeLocation(
-                filePath: file,
+                fullFilePath: file,
                 functionIdentifier: function,
                 lineNumber: line
             )

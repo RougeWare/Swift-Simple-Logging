@@ -26,6 +26,8 @@ public protocol LogMessageProtocol {
     /// The string that will be printed to the log, in its entirety.
     ///
     /// If you want your `Loggable` to look consistent, you should not override this. Instead, override `logLine`
+    ///
+    /// - Parameter options: _optional_ - Some options for how the log line should be rendered
     func entireRenderedLogLine(options: Options) -> String
 }
 
@@ -33,9 +35,7 @@ public protocol LogMessageProtocol {
 
 public extension LogMessageProtocol {
     func entireRenderedLogLine(options: Options) -> String {
-        """
-        \(defaultDateFormatter.string(from: dateLogged)) \(severity.name(style: options.severityStyle)) \(logLine)
-        """
+        "\(defaultDateFormatter.string(from: dateLogged)) \(severity.name(style: options.severityStyle)) \(logLine)"
     }
     
     
