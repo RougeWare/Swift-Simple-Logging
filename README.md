@@ -7,36 +7,11 @@ This framework was built for both out-of-the-box simplicity when you just need l
 
 ## Examples ##
 
-### Logging scope entry/exit ###
-
-When tracing through code in your logs, it's common to put log statements when a scope is entered and when it's exited. This framework makes such an action first-class and quite easy:
-
-```swift
-func notable() {
-    logEntry(); defer { logExit() }
-    
-    MyApp.notableOperation()
-}
-```
-
-```swift
-func longAsyncOperation() {
-    logEntry(); defer { logExit() }
-    
-    DispatchQueue.main.async {
-        logEntry(); defer { logExit() }
-        
-        longOperation()
-    }
-}
-```
-
-
 ### Severities ###
 
 Six severity levels are defined in this package, but you can define more if you please:
 
-- 🗣 `verbose` - The lowest builtin priority; anything and everything might be logged at this level
+- 💬 `verbose` - The lowest builtin priority; anything and everything might be logged at this level
 - 👩🏾‍💻 `debug` - Usually not included in user-facing logs, but helpful messages for debugging issues in the field
 - ℹ️ `info` - Usually the lowest level that appears in user logs, information for power-users who look at logs
 - ⚠️ `warning` - Describing potential future problems. "Future" might be the next line, the next release, etc.
@@ -64,7 +39,7 @@ if system.environment.isInvalid {
 
 Example output, with a channel which allows all messages:
 ```plain
-2020-05-19 22:30:06.362Z 🗣 Starting...
+2020-05-19 22:30:06.362Z 💬 Starting...
 2020-05-19 22:30:06.362Z 👩🏾‍💻 TODO: Implement statup procedure
 2020-05-19 22:30:06.362Z ℹ️ Startup done
 2020-05-19 22:30:06.362Z ⚠️ Future versions won't support the `--magically-work` flag
@@ -153,3 +128,27 @@ The above lines will result in these logs:
 </td></tr>
 
 </tbody></table>
+
+### Logging scope entry/exit ###
+
+When tracing through code in your logs, it's common to put log statements when a scope is entered and when it's exited. This framework makes such an action first-class and quite easy:
+
+```swift
+func notable() {
+    logEntry(); defer { logExit() }
+    
+    MyApp.notableOperation()
+}
+```
+
+```swift
+func longAsyncOperation() {
+    logEntry(); defer { logExit() }
+    
+    DispatchQueue.main.async {
+        logEntry(); defer { logExit() }
+        
+        longOperation()
+    }
+}
+```

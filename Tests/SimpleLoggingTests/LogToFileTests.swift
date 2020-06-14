@@ -10,6 +10,10 @@ import SimpleLogging
 
 
 
+private let date = #"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z"#
+
+
+
 final class LogToFileTests: XCTestCase {
     
     static let tempLogFolderUrl = URL(fileURLWithPath: NSTemporaryDirectory())
@@ -46,22 +50,28 @@ final class LogToFileTests: XCTestCase {
         log(info: "This message is informative")
         log(warning: "This message is a warning")
         log(error: "This message is erroneous")
+        log(error: TestError.neverThrown)
+        XCTAssertEqual(log(errorIfThrows: try testDanger(), backup: 17), 17)
+        XCTAssertEqual(log(errorIfThrows: testSafe(42), backup: 5), 42)
         log(fatal: "This message is fatal")
         
         let testFileContents = try String(contentsOfFile: Self.testFilePath)
         
         let expectedFileContentsRegex = try NSRegularExpression(pattern: #"""
-        ^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z ℹ️ This message is informative
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z ⚠️ This message is a warning
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 🆘 This message is erroneous
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 🚨 This message is fatal$
+        ^\#(date) ℹ️ This message is informative
+        \#(date) ⚠️ This message is a warning
+        \#(date) 🆘 This message is erroneous
+        \#(date) 🆘 neverThrown
+        \#(date) 🆘 thrownFromInsideTestFunction
+        \#(date) 🚨 This message is fatal$
         """#, options: [])
         
-        XCTAssertEqual(214, testFileContents.utf16.count)
+        XCTAssertEqual(311, testFileContents.utf16.count)
         
-        XCTAssertEqual(1, expectedFileContentsRegex.numberOfMatches(in: testFileContents,
-                                                                    options: .anchored,
-                                                                    range: NSRange(location: 0, length: testFileContents.utf16.count)))
+        XCTAssertEqual(1, expectedFileContentsRegex.numberOfMatches(
+            in: testFileContents,
+            options: .anchored,
+            range: NSRange(location: 0, length: testFileContents.utf16.count)))
     }
     
     
@@ -76,25 +86,32 @@ final class LogToFileTests: XCTestCase {
         log(info: "This message is informative")
         log(warning: "This message is a warning")
         log(error: "This message is erroneous")
+        log(error: TestError.neverThrown)
+        XCTAssertEqual(log(errorIfThrows: try testDanger(), backup: 17), 17)
+        XCTAssertEqual(log(errorIfThrows: testSafe(42), backup: 5), 42)
         log(fatal: "This message is fatal")
         
         let testFileContents = try String(contentsOfFile: Self.testFilePath)
         
         let expectedFileContentsRegex = try NSRegularExpression(pattern: #"""
-        ^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 🗣 This message is verbose
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 👩🏾‍💻 This message is for debugging
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z ℹ️ This message is informative
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z ⚠️ This message is a warning
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 🆘 This message is erroneous
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 🚨 This message is fatal
+        ^\#(date) 💬 This message is verbose
+        \#(date) 👩🏾‍💻 This message is for debugging
+        \#(date) ℹ️ This message is informative
+        \#(date) ⚠️ This message is a warning
+        \#(date) 🆘 This message is erroneous
+        \#(date) 🆘 neverThrown
+        \#(date) 🆘 thrownFromInsideTestFunction
+        \#(date) 🚨 This message is fatal
         $
         """#.replacingOccurrences(of: "\n", with: "\\n"), options: [])
         
-        XCTAssertEqual(329, testFileContents.utf16.count)
+        XCTAssertEqual(426, testFileContents.utf16.count)
         
-        XCTAssertEqual(1, expectedFileContentsRegex.numberOfMatches(in: testFileContents,
-                                                                    options: .anchored,
-                                                                    range: NSRange(location: 0, length: testFileContents.utf16.count)))
+        XCTAssertEqual(1, expectedFileContentsRegex.numberOfMatches(
+            in: testFileContents,
+            options: .anchored,
+            range: NSRange(location: 0, length: testFileContents.utf16.count))
+        )
     }
     
     
@@ -109,21 +126,27 @@ final class LogToFileTests: XCTestCase {
         log(info: "This message is informative")
         log(warning: "This message is a warning")
         log(error: "This message is erroneous")
+        log(error: TestError.neverThrown)
+        XCTAssertEqual(log(errorIfThrows: try testDanger(), backup: 17), 17)
+        XCTAssertEqual(log(errorIfThrows: testSafe(42), backup: 5), 42)
         log(fatal: "This message is fatal")
         
         let testFileContents = try String(contentsOfFile: Self.testFilePath)
         
         let expectedFileContentsRegex = try NSRegularExpression(pattern: #"""
-        ^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 🆘 This message is erroneous
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 🚨 This message is fatal
+        ^\#(date) 🆘 This message is erroneous
+        \#(date) 🆘 neverThrown
+        \#(date) 🆘 thrownFromInsideTestFunction
+        \#(date) 🚨 This message is fatal
         $
         """#, options: [])
         
-        XCTAssertEqual(104, testFileContents.utf16.count)
+        XCTAssertEqual(201, testFileContents.utf16.count)
         
-        XCTAssertEqual(1, expectedFileContentsRegex.numberOfMatches(in: testFileContents,
-                                                                    options: [.anchored, .withoutAnchoringBounds],
-                                                                    range: NSRange(location: 0, length: testFileContents.utf16.count)))
+        XCTAssertEqual(1, expectedFileContentsRegex.numberOfMatches(
+            in: testFileContents,
+            options: [.anchored, .withoutAnchoringBounds],
+            range: NSRange(location: 0, length: testFileContents.utf16.count)))
     }
     
     
@@ -138,31 +161,39 @@ final class LogToFileTests: XCTestCase {
         log(info: "This message is informative")
         log(warning: "This message is a warning")
         log(error: "This message is erroneous")
+        log(error: TestError.neverThrown)
+        XCTAssertEqual(log(errorIfThrows: try testDanger(), backup: 17), 17)
+        XCTAssertEqual(log(errorIfThrows: testSafe(42), backup: 5), 42)
         log(fatal: "This message is fatal")
         
         let testFileContents = try String(contentsOfFile: Self.testFilePath)
         
         let expectedFileContentsRegex = try NSRegularExpression(pattern: #"""
-        ^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 🗣 This message is verbose
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 🗣 This message is verbose
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 👩🏾‍💻 This message is for debugging
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 👩🏾‍💻 This message is for debugging
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z ℹ️ This message is informative
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z ℹ️ This message is informative
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z ⚠️ This message is a warning
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z ⚠️ This message is a warning
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 🆘 This message is erroneous
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 🆘 This message is erroneous
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 🚨 This message is fatal
-        \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}Z 🚨 This message is fatal
+        ^\#(date) 💬 This message is verbose
+        \#(date) 💬 This message is verbose
+        \#(date) 👩🏾‍💻 This message is for debugging
+        \#(date) 👩🏾‍💻 This message is for debugging
+        \#(date) ℹ️ This message is informative
+        \#(date) ℹ️ This message is informative
+        \#(date) ⚠️ This message is a warning
+        \#(date) ⚠️ This message is a warning
+        \#(date) 🆘 This message is erroneous
+        \#(date) 🆘 This message is erroneous
+        \#(date) 🆘 neverThrown
+        \#(date) 🆘 neverThrown
+        \#(date) 🆘 thrownFromInsideTestFunction
+        \#(date) 🆘 thrownFromInsideTestFunction
+        \#(date) 🚨 This message is fatal
+        \#(date) 🚨 This message is fatal
         $
         """#.replacingOccurrences(of: "\n", with: "\\n"), options: [])
         
-        XCTAssertEqual(658, testFileContents.utf16.count)
+        XCTAssertEqual(852, testFileContents.utf16.count)
         
-        XCTAssertEqual(1, expectedFileContentsRegex.numberOfMatches(in: testFileContents,
-                                                                    options: .anchored,
-                                                                    range: NSRange(location: 0, length: testFileContents.utf16.count)))
+        XCTAssertEqual(1, expectedFileContentsRegex.numberOfMatches(
+            in: testFileContents,
+            options: .anchored,
+            range: NSRange(location: 0, length: testFileContents.utf16.count)))
     }
     
     
@@ -173,3 +204,18 @@ final class LogToFileTests: XCTestCase {
         ("testTwoChannelsToTheSameFile", testTwoChannelsToTheSameFile),
     ]
 }
+
+
+
+private enum TestError: Error {
+    case neverThrown
+    case thrownFromInsideTestFunction
+}
+
+
+private func testDanger() throws -> UInt {
+    throw TestError.thrownFromInsideTestFunction
+}
+
+
+private func testSafe(_ return: UInt) -> UInt { `return` }
