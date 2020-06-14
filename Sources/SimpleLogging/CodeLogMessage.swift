@@ -11,10 +11,10 @@ import Foundation
 
 
 /// A log message in and about the code. This is most log lines.
-public struct CodeLogMessage: LogMessageProtocol {
+public struct CodeLogMessage {
     public let dateLogged: Date
     public let severity: LogSeverity
-    public let logLine: String
+    public let message: String
     
     /// The location of the log line within the code
     public let codeLocation: CodeLocation
@@ -23,12 +23,12 @@ public struct CodeLogMessage: LogMessageProtocol {
     public init(
         dateLogged: Date = Date(),
         severity: LogSeverity,
-        logLine: String,
+        message: String,
         codeLocation: CodeLocation
     ) {
         self.dateLogged = dateLogged
         self.severity = severity
-        self.logLine = logLine
+        self.message = message
         self.codeLocation = codeLocation
     }
 }
@@ -37,18 +37,27 @@ public struct CodeLogMessage: LogMessageProtocol {
 
 public extension CodeLogMessage {
     init(severity: LogSeverity,
-         logLine: String,
-         locationFilePath: String = #file,
+         message: String,
+         locationFullFilePath: String = #file,
          locationFunctionIdentifier: String = #function,
          locationLineNumber: UInt = #line
     ) {
         self.init(
             dateLogged: Date(),
             severity: severity,
-            logLine: logLine,
-            codeLocation: CodeLocation(filePath: locationFilePath,
+            message: message,
+            codeLocation: CodeLocation(fullFilePath: locationFullFilePath,
                                        functionIdentifier: locationFunctionIdentifier,
                                        lineNumber: locationLineNumber))
+    }
+}
+
+
+
+extension CodeLogMessage: LogMessageProtocol {
+    
+    public var logLine: String {
+        "\(codeLocation) \t\(message)"
     }
 }
 
@@ -58,7 +67,7 @@ public extension CodeLogMessage {
 public struct CodeLocation {
     
     /// The file in which there is code
-    public let filePath: String
+    public let fileName: String
     
     /// The function in which the code line resides, for future reference
     public let functionIdentifier: String
@@ -68,12 +77,20 @@ public struct CodeLocation {
     
     
     public init(
-        filePath: String,
+        fullFilePath: String,
         functionIdentifier: String,
         lineNumber: UInt
     ) {
-        self.filePath = filePath
+        self.fileName = URL(fileURLWithPath: fullFilePath).lastPathComponent
         self.functionIdentifier = functionIdentifier
         self.lineNumber = lineNumber
+    }
+}
+
+
+
+extension CodeLocation: CustomStringConvertible {
+    public var description: String {
+        "\(fileName):\(lineNumber) \(functionIdentifier)"
     }
 }
