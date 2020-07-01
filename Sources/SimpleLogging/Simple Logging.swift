@@ -424,7 +424,7 @@ public func logEntry(file: String = #file, function: String = #function, line: U
 /// - Returns: The message which was logged
 @discardableResult
 @inline(__always)
-public func logEdit(file: String = #file, function: String = #function, line: UInt = #line,
+public func logExit(file: String = #file, function: String = #function, line: UInt = #line,
                     to channels: [LogChannel] = LogManager.defaultChannels
 ) -> LogMessageProtocol {
     log(verbose: "Exit",
