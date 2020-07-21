@@ -1,0 +1,9 @@
+This repository uses multiple licenses. To determine which license is
+appropriate, use the following guidance:
+
+1. The following entities may use the license provided in the LICENSE-A.txt
+   file in this repository:
+  a. PKWARE, Inc.
+
+2. All other entities must use the license provided in the LICENSE-B.txt file
+   in this repository.
