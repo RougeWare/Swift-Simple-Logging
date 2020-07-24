@@ -13,17 +13,23 @@ import Foundation
 /// The channel to which to send log messages
 public class LogChannel {
     
+    
+    // MARK: Public vars
+    
     /// The human-readable name of the log channel
     public let name: String
     
     /// The location of the log channel, to which log messages will be sent
     public let location: Location
     
-    /// The lowest severity which will be pushed to this channel. All others will be discarded entirely.
-    public var lowestAllowedSeverity: LogSeverity?
+    /// The severities which will be pushed to this channel. All others will be discarded entirely.
+    public var severityFilter: LogSeverityFilter
     
     /// The style of the severity part of a log line in this channel
     public let logSeverityNameStyle: SeverityNameStyle
+    
+    
+    // MARK: Private vars
     
     /// The logging options to use with each message
     private let options: LoggingOptions
@@ -31,6 +37,8 @@ public class LogChannel {
     /// A handle to a file to which we might append a log message
     private var fileHandle: FileHandle!
     
+    
+    // MARK: Init
     
     /// Creates a new log channel with the given configuration
     ///
@@ -47,16 +55,16 @@ public class LogChannel {
     ///                            Defaults to `.emoji`, so humans can more easily skim the log.
     ///
     /// - Throws: Any error which occurs while trying to create the channel
-    public init(name: String,
-         location: Location,
-         lowestAllowedSeverity: LogSeverity? = .info,
-         logSeverityNameStyle: SeverityNameStyle = .emoji
-    )
-        throws
+    public init(
+        name: String,
+        location: Location,
+        severityFilter: LogSeverityFilter = .specificAndHigher(lowest: .info),
+        logSeverityNameStyle: SeverityNameStyle = .emoji)
+    throws
     {
         self.name = name
         self.location = location
-        self.lowestAllowedSeverity = lowestAllowedSeverity
+        self.severityFilter = severityFilter
         self.logSeverityNameStyle = logSeverityNameStyle
         self.options = LoggingOptions(severityStyle: logSeverityNameStyle)
         
@@ -93,6 +101,21 @@ public class LogChannel {
                 throw error
             }
         }
+    }
+    
+    
+    public convenience init(
+        name: String,
+        location: Location,
+        lowestAllowedSeverity: LogSeverity,
+        logSeverityNameStyle: SeverityNameStyle = .emoji)
+    throws
+    {
+        try self.init(
+            name: name,
+            location: location,
+            severityFilter: .specificAndHigher(lowest: lowestAllowedSeverity),
+            logSeverityNameStyle: logSeverityNameStyle)
     }
     
     
@@ -145,9 +168,7 @@ public extension LogChannel {
     ///           a read-only volume)
     func append(_ message: LogMessageProtocol) throws {
         
-        if let lowestAllowedSeverity = lowestAllowedSeverity,
-            message.severity < lowestAllowedSeverity
-        {
+        guard severityFilter.allows(message) else {
             return
         }
         
@@ -195,5 +216,51 @@ public extension LogChannel {
     enum CreateError: Error {
         /// Thrown when you want to log to a file, but that file could not be created
         case couldNotCreateLogFile(path: String)
+    }
+}
+
+
+
+// MARK: - LogSeverityFilter
+
+//@dynamicMemberLookup
+public enum LogSeverityFilter {
+    case allowAll
+    case silence
+    case only(LogSeverity)
+    case range(ClosedRange<LogSeverity>)
+    case specificAndHigher(lowest: LogSeverity)
+    
+    
+    
+//    static subscript(dynamicMember keyPath: KeyPath<LogSeverity.Type, LogSeverity>) -> LogSeverityFilter {
+//        return .specificAndHigher(lowest: LogSeverity.self[keyPath: keyPath])
+//    }
+}
+
+
+
+public extension LogSeverityFilter {
+    @inline(__always)
+    func allows(_ message: LogMessageProtocol) -> Bool {
+        allows(message.severity)
+    }
+    
+    
+    @inlinable
+    func allows(_ severity: LogSeverity) -> Bool {
+        switch self {
+        case .allowAll: return true
+        case .silence: return false
+        
+        case .only(severity): return true
+        case .only(_): return false
+        
+        case .range(let range):
+            return range.contains(severity)
+            
+        case .specificAndHigher(lowest: let lowest):
+            return lowest <= severity
+        }
     }
 }

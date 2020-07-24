@@ -294,16 +294,40 @@ public func log(error any: Any,
 ///
 /// - Parameters:
 ///   - error:    The error to be logged
+///   - message:  _optional_ - A message to send in the log alongside the error
 ///   - channels: _optional_ - The channels to which to log the given item
 ///
 /// - Returns: The message which was logged
 @discardableResult
 @inline(__always)
-func log(error: Error,
-         to channels: [LogChannel] = LogManager.defaultChannels,
-         file: String = #file, function: String = #function, line: UInt = #line
-) -> LogMessageProtocol {
+public func log(error: Error,
+                to channels: [LogChannel] = LogManager.defaultChannels,
+                file: String = #file, function: String = #function, line: UInt = #line)
+-> LogMessageProtocol {
     log(severity: .error, error.loggable(),
+        file: file, function: function, line: line,
+        to: channels)
+}
+
+
+/// Logs the given error (and the location where you called this function) at `error` severity to the given channels
+///
+/// - Parameters:
+///   - error:     The error to be logged
+///   - message:   _optional_ - A message to send in the log alongside the error
+///   - separator: _optional_ - The separator to place between the error and the custom message, iff a custom message
+///                is used. Defaults to `"  \t"`
+///   - channels:  _optional_ - The channels to which to log the given item
+///
+/// - Returns: The message which was logged
+@discardableResult
+@inlinable
+public func log(error: Error,
+                _ message: Loggable, separator: String = "  \t",
+                to channels: [LogChannel] = LogManager.defaultChannels,
+                file: String = #file, function: String = #function, line: UInt = #line)
+-> LogMessageProtocol {
+    log(severity: .error, error.loggable().combined(with: message, separator: separator),
         file: file, function: function, line: line,
         to: channels)
 }

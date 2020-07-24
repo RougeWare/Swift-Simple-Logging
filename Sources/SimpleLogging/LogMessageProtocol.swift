@@ -39,18 +39,26 @@ public extension LogMessageProtocol {
     }
     
     
+    /// The string that will be printed to the log, in its entirety.
+    ///
+    /// If you want your `Loggable` to look consistent, you should not override this. Instead, override `logLine`
+    ///
+    /// - Parameter options: _optional_ - Some options for how the log line should be rendered
     func entireRenderedLogLine() -> String {
         entireRenderedLogLine(options: .default)
     }
     
     
     
+    /// Options to customize a log line
     typealias Options = LoggingOptions
 }
 
 
 
+/// Options to customize a log line
 public struct LoggingOptions {
+    
     /// The style of the severity part of a log line
     public let severityStyle: SeverityNameStyle
 }

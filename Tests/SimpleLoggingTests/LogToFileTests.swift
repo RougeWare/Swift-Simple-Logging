@@ -51,6 +51,7 @@ final class LogToFileTests: XCTestCase {
         log(warning: "This message is a warning")
         log(error: "This message is erroneous")
         log(error: TestError.neverThrown)
+        log(error: TestError.neverThrown, "This is a message about the error which was logged but never thrown")
         XCTAssertEqual(log(errorIfThrows: try alwaysThrows(), backup: 17), 17)
         XCTAssertEqual(log(errorIfThrows: neverThrows(42), backup: 5), 42)
         log(fatal: "This message is fatal")
@@ -61,12 +62,13 @@ final class LogToFileTests: XCTestCase {
         \#(date) ℹ️ LogToFileTests\.swift:50 testLogToFile\(\) \tThis message is informative
         \#(date) ⚠️ LogToFileTests\.swift:51 testLogToFile\(\) \tThis message is a warning
         \#(date) 🆘 LogToFileTests\.swift:52 testLogToFile\(\) \tThis message is erroneous
-        \#(date) 🆘 LogToFileTests\.swift:53 testLogToFile\(\) \tneverThrown
-        \#(date) 🆘 LogToFileTests\.swift:54 testLogToFile\(\) \tthrownFromInsideTestFunction
-        \#(date) 🚨 LogToFileTests\.swift:56 testLogToFile\(\) \tThis message is fatal
+        \#(date) 🆘 LogToFileTests\.swift:53 testLogToFile\(\) \tThis error is logged but never thrown
+        \#(date) 🆘 LogToFileTests\.swift:54 testLogToFile\(\) \tThis error is logged but never thrown  \tThis is a message about the error which was logged but never thrown
+        \#(date) 🆘 LogToFileTests\.swift:55 testLogToFile\(\) \tThis error is only thrown from inside a test function
+        \#(date) 🚨 LogToFileTests\.swift:57 testLogToFile\(\) \tThis message is fatal
         """#)
         
-        XCTAssertEqual(557, testFileContents.utf16.count)
+        XCTAssertEqual(785, testFileContents.utf16.count)
         
         XCTAssertEqual(1, expectedFileContentsRegex.numberOfMatches(
             in: testFileContents,
@@ -87,6 +89,7 @@ final class LogToFileTests: XCTestCase {
         log(warning: "This message is a warning")
         log(error: "This message is erroneous")
         log(error: TestError.neverThrown)
+        log(error: TestError.neverThrown, "This is a message about the error which was logged but never thrown")
         XCTAssertEqual(log(errorIfThrows: try alwaysThrows(), backup: 17), 17)
         XCTAssertEqual(log(errorIfThrows: neverThrows(42), backup: 5), 42)
         log(fatal: "This message is fatal")
@@ -94,17 +97,18 @@ final class LogToFileTests: XCTestCase {
         let testFileContents = try String(contentsOfFile: Self.testFilePath)
         
         let expectedFileContentsRegex = NSRegularExpression(wholeStringPattern: #"""
-        \#(date) 💬 LogToFileTests\.swift:84 testLogAllSeveritiesToFile\(\) \tThis message is verbose
-        \#(date) 👩🏾‍💻 LogToFileTests\.swift:85 testLogAllSeveritiesToFile\(\) \tThis message is for debugging
-        \#(date) ℹ️ LogToFileTests\.swift:86 testLogAllSeveritiesToFile\(\) \tThis message is informative
-        \#(date) ⚠️ LogToFileTests\.swift:87 testLogAllSeveritiesToFile\(\) \tThis message is a warning
-        \#(date) 🆘 LogToFileTests\.swift:88 testLogAllSeveritiesToFile\(\) \tThis message is erroneous
-        \#(date) 🆘 LogToFileTests\.swift:89 testLogAllSeveritiesToFile\(\) \tneverThrown
-        \#(date) 🆘 LogToFileTests\.swift:90 testLogAllSeveritiesToFile\(\) \tthrownFromInsideTestFunction
-        \#(date) 🚨 LogToFileTests\.swift:92 testLogAllSeveritiesToFile\(\) \tThis message is fatal
+        \#(date) 💬 LogToFileTests\.swift:86 testLogAllSeveritiesToFile\(\) \tThis message is verbose
+        \#(date) 👩🏾‍💻 LogToFileTests\.swift:87 testLogAllSeveritiesToFile\(\) \tThis message is for debugging
+        \#(date) ℹ️ LogToFileTests\.swift:88 testLogAllSeveritiesToFile\(\) \tThis message is informative
+        \#(date) ⚠️ LogToFileTests\.swift:89 testLogAllSeveritiesToFile\(\) \tThis message is a warning
+        \#(date) 🆘 LogToFileTests\.swift:90 testLogAllSeveritiesToFile\(\) \tThis message is erroneous
+        \#(date) 🆘 LogToFileTests\.swift:91 testLogToFile\(\) \tThis error is logged but never thrown
+        \#(date) 🆘 LogToFileTests\.swift:92 testLogToFile\(\) \tThis error is logged but never thrown  \tThis is a message about the error which was logged but never thrown
+        \#(date) 🆘 LogToFileTests\.swift:93 testLogAllSeveritiesToFile\(\) \tThis error is only thrown from inside a test function
+        \#(date) 🚨 LogToFileTests\.swift:95 testLogAllSeveritiesToFile\(\) \tThis message is fatal
         """#)
         
-        XCTAssertEqual(858, testFileContents.utf16.count)
+        XCTAssertEqual(1099, testFileContents.utf16.count)
         
         XCTAssertEqual(1, expectedFileContentsRegex.numberOfMatches(
             in: testFileContents,
@@ -126,6 +130,7 @@ final class LogToFileTests: XCTestCase {
         log(warning: "This message is a warning")
         log(error: "This message is erroneous")
         log(error: TestError.neverThrown)
+        log(error: TestError.neverThrown, "This is a message about the error which was logged but never thrown")
         XCTAssertEqual(log(errorIfThrows: try alwaysThrows(), backup: 17), 17)
         XCTAssertEqual(log(errorIfThrows: neverThrows(42), backup: 5), 42)
         log(fatal: "This message is fatal")
@@ -160,6 +165,7 @@ final class LogToFileTests: XCTestCase {
         log(warning: "This message is a warning")
         log(error: "This message is erroneous")
         log(error: TestError.neverThrown)
+        log(error: TestError.neverThrown, "This is a message about the error which was logged but never thrown")
         XCTAssertEqual(log(errorIfThrows: try alwaysThrows(), backup: 17), 17)
         XCTAssertEqual(log(errorIfThrows: neverThrows(42), backup: 5), 42)
         log(fatal: "This message is fatal")
@@ -204,10 +210,19 @@ final class LogToFileTests: XCTestCase {
 
 
 
-private enum TestError: Error {
-    case neverThrown
-    case thrownFromInsideTestFunction
+private enum TestError: String, Error {
+    case neverThrown = "This error is logged but never thrown"
+    case thrownFromInsideTestFunction = "This error is only thrown from inside a test function"
 }
+
+
+
+extension TestError: CustomStringConvertible {
+    var description: String {
+        return rawValue
+    }
+}
+
 
 
 private func alwaysThrows() throws -> UInt {
