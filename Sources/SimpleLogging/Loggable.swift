@@ -61,6 +61,6 @@ extension NSError: Loggable {}
 
 public extension Error {
     func loggable() -> Loggable {
-        self as NSError
+        return (self as CustomStringConvertible).description
     }
 }
