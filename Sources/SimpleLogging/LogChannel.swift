@@ -223,12 +223,23 @@ public extension LogChannel {
 
 // MARK: - LogSeverityFilter
 
-//@dynamicMemberLookup
+/// A filter which can be applied to a log channel to specify which messages are allowed through, based on their severities
+//@dynamicMemberLookup // Would love this, but doesn't seem it works quite yet
 public enum LogSeverityFilter {
+    
+    /// All messages are allowed
     case allowAll
-    case silence
+    
+    /// No messages are allowed
+    case allowNone
+    
+    /// Only allow messages of this severity
     case only(LogSeverity)
+    
+    /// Only allow messages whose severity is in this range of severities
     case range(ClosedRange<LogSeverity>)
+    
+    /// Allow messages with this severity and higher
     case specificAndHigher(lowest: LogSeverity)
     
     
@@ -241,17 +252,26 @@ public enum LogSeverityFilter {
 
 
 public extension LogSeverityFilter {
+    
+    /// Whether or not this filter allows the given message to be logged
+    ///
+    /// - Parameter message: The message which might be allowed through this filter
+    /// - Returns: `true` iff the given message is allowed through this filter
     @inline(__always)
     func allows(_ message: LogMessageProtocol) -> Bool {
         allows(message.severity)
     }
     
     
+    /// Whether or not this fitler allows messages with the given severity to be logged
+    ///
+    /// - Parameter severity: A severity to check against this filter
+    /// - Returns: `true` iff messages with the given severity are allowed through this filter
     @inlinable
     func allows(_ severity: LogSeverity) -> Bool {
         switch self {
         case .allowAll: return true
-        case .silence: return false
+        case .allowNone: return false
         
         case .only(severity): return true
         case .only(_): return false

@@ -78,9 +78,10 @@ final class LogToFileTests: XCTestCase {
     
     
     func testLogAllSeveritiesToFile() throws {
-        let testLogChannel = try LogChannel(name: "Log File Test",
-                                            location: .file(path: Self.testFilePath),
-                                            lowestAllowedSeverity: nil)
+        let testLogChannel = try LogChannel(
+            name: "Log File Test",
+            location: .file(path: Self.testFilePath),
+            severityFilter: .allowAll)
         LogManager.defaultChannels.append(testLogChannel)
         
         log(verbose: "This message is verbose")
@@ -97,15 +98,15 @@ final class LogToFileTests: XCTestCase {
         let testFileContents = try String(contentsOfFile: Self.testFilePath)
         
         let expectedFileContentsRegex = NSRegularExpression(wholeStringPattern: #"""
-        \#(date) 💬 LogToFileTests\.swift:86 testLogAllSeveritiesToFile\(\) \tThis message is verbose
-        \#(date) 👩🏾‍💻 LogToFileTests\.swift:87 testLogAllSeveritiesToFile\(\) \tThis message is for debugging
-        \#(date) ℹ️ LogToFileTests\.swift:88 testLogAllSeveritiesToFile\(\) \tThis message is informative
-        \#(date) ⚠️ LogToFileTests\.swift:89 testLogAllSeveritiesToFile\(\) \tThis message is a warning
-        \#(date) 🆘 LogToFileTests\.swift:90 testLogAllSeveritiesToFile\(\) \tThis message is erroneous
-        \#(date) 🆘 LogToFileTests\.swift:91 testLogToFile\(\) \tThis error is logged but never thrown
-        \#(date) 🆘 LogToFileTests\.swift:92 testLogToFile\(\) \tThis error is logged but never thrown  \tThis is a message about the error which was logged but never thrown
-        \#(date) 🆘 LogToFileTests\.swift:93 testLogAllSeveritiesToFile\(\) \tThis error is only thrown from inside a test function
-        \#(date) 🚨 LogToFileTests\.swift:95 testLogAllSeveritiesToFile\(\) \tThis message is fatal
+        \#(date) 💬 LogToFileTests\.swift:87 testLogAllSeveritiesToFile\(\) \tThis message is verbose
+        \#(date) 👩🏾‍💻 LogToFileTests\.swift:88 testLogAllSeveritiesToFile\(\) \tThis message is for debugging
+        \#(date) ℹ️ LogToFileTests\.swift:89 testLogAllSeveritiesToFile\(\) \tThis message is informative
+        \#(date) ⚠️ LogToFileTests\.swift:90 testLogAllSeveritiesToFile\(\) \tThis message is a warning
+        \#(date) 🆘 LogToFileTests\.swift:91 testLogAllSeveritiesToFile\(\) \tThis message is erroneous
+        \#(date) 🆘 LogToFileTests\.swift:92 testLogAllSeveritiesToFile\(\) \tThis error is logged but never thrown
+        \#(date) 🆘 LogToFileTests\.swift:93 testLogAllSeveritiesToFile\(\) \tThis error is logged but never thrown  \tThis is a message about the error which was logged but never thrown
+        \#(date) 🆘 LogToFileTests\.swift:94 testLogAllSeveritiesToFile\(\) \tThis error is only thrown from inside a test function
+        \#(date) 🚨 LogToFileTests\.swift:96 testLogAllSeveritiesToFile\(\) \tThis message is fatal
         """#)
         
         XCTAssertEqual(1099, testFileContents.utf16.count)
@@ -138,13 +139,14 @@ final class LogToFileTests: XCTestCase {
         let testFileContents = try String(contentsOfFile: Self.testFilePath)
         
         let expectedFileContentsRegex = NSRegularExpression(wholeStringPattern: #"""
-        \#(date) 🆘 LogToFileTests\.swift:127 testLogOnlyCriticalSeveritiesToFile\(\) \tThis message is erroneous
-        \#(date) 🆘 LogToFileTests\.swift:128 testLogOnlyCriticalSeveritiesToFile\(\) \tneverThrown
-        \#(date) 🆘 LogToFileTests\.swift:129 testLogOnlyCriticalSeveritiesToFile\(\) \tthrownFromInsideTestFunction
-        \#(date) 🚨 LogToFileTests\.swift:131 testLogOnlyCriticalSeveritiesToFile\(\) \tThis message is fatal
+        \#(date) 🆘 LogToFileTests\.swift:132 testLogOnlyCriticalSeveritiesToFile\(\) \tThis message is erroneous
+        \#(date) 🆘 LogToFileTests\.swift:133 testLogOnlyCriticalSeveritiesToFile\(\) \tThis error is logged but never thrown
+        \#(date) 🆘 LogToFileTests\.swift:134 testLogOnlyCriticalSeveritiesToFile\(\) \tThis error is logged but never thrown  \tThis is a message about the error which was logged but never thrown
+        \#(date) 🆘 LogToFileTests\.swift:135 testLogOnlyCriticalSeveritiesToFile\(\) \tThis error is only thrown from inside a test function
+        \#(date) 🚨 LogToFileTests\.swift:137 testLogOnlyCriticalSeveritiesToFile\(\) \tThis message is fatal
         """#)
         
-        XCTAssertEqual(457, testFileContents.utf16.count)
+        XCTAssertEqual(708, testFileContents.utf16.count)
         
         XCTAssertEqual(1, expectedFileContentsRegex.numberOfMatches(
             in: testFileContents,
@@ -154,9 +156,10 @@ final class LogToFileTests: XCTestCase {
     
     
     func testTwoChannelsToTheSameFile() throws {
-        let testLogChannel = try LogChannel(name: "Log File Test",
-                                            location: .file(path: Self.testFilePath),
-                                            lowestAllowedSeverity: nil)
+        let testLogChannel = try LogChannel(
+            name: "Log File Test",
+            location: .file(path: Self.testFilePath),
+            severityFilter: .allowAll)
         LogManager.defaultChannels = [testLogChannel, testLogChannel]
         
         log(verbose: "This message is verbose")
@@ -173,25 +176,27 @@ final class LogToFileTests: XCTestCase {
         let testFileContents = try String(contentsOfFile: Self.testFilePath)
         
         let expectedFileContentsRegex = NSRegularExpression(wholeStringPattern: #"""
-        \#(date) 💬 LogToFileTests\.swift:157 testTwoChannelsToTheSameFile\(\) \tThis message is verbose
-        \#(date) 💬 LogToFileTests\.swift:157 testTwoChannelsToTheSameFile\(\) \tThis message is verbose
-        \#(date) 👩🏾‍💻 LogToFileTests\.swift:158 testTwoChannelsToTheSameFile\(\) \tThis message is for debugging
-        \#(date) 👩🏾‍💻 LogToFileTests\.swift:158 testTwoChannelsToTheSameFile\(\) \tThis message is for debugging
-        \#(date) ℹ️ LogToFileTests\.swift:159 testTwoChannelsToTheSameFile\(\) \tThis message is informative
-        \#(date) ℹ️ LogToFileTests\.swift:159 testTwoChannelsToTheSameFile\(\) \tThis message is informative
-        \#(date) ⚠️ LogToFileTests\.swift:160 testTwoChannelsToTheSameFile\(\) \tThis message is a warning
-        \#(date) ⚠️ LogToFileTests\.swift:160 testTwoChannelsToTheSameFile\(\) \tThis message is a warning
-        \#(date) 🆘 LogToFileTests\.swift:161 testTwoChannelsToTheSameFile\(\) \tThis message is erroneous
-        \#(date) 🆘 LogToFileTests\.swift:161 testTwoChannelsToTheSameFile\(\) \tThis message is erroneous
-        \#(date) 🆘 LogToFileTests\.swift:162 testTwoChannelsToTheSameFile\(\) \tneverThrown
-        \#(date) 🆘 LogToFileTests\.swift:162 testTwoChannelsToTheSameFile\(\) \tneverThrown
-        \#(date) 🆘 LogToFileTests\.swift:163 testTwoChannelsToTheSameFile\(\) \tthrownFromInsideTestFunction
-        \#(date) 🆘 LogToFileTests\.swift:163 testTwoChannelsToTheSameFile\(\) \tthrownFromInsideTestFunction
-        \#(date) 🚨 LogToFileTests\.swift:165 testTwoChannelsToTheSameFile\(\) \tThis message is fatal
-        \#(date) 🚨 LogToFileTests\.swift:165 testTwoChannelsToTheSameFile\(\) \tThis message is fatal
+        \#(date) 💬 LogToFileTests\.swift:165 testTwoChannelsToTheSameFile\(\) \tThis message is verbose
+        \#(date) 💬 LogToFileTests\.swift:165 testTwoChannelsToTheSameFile\(\) \tThis message is verbose
+        \#(date) 👩🏾‍💻 LogToFileTests\.swift:166 testTwoChannelsToTheSameFile\(\) \tThis message is for debugging
+        \#(date) 👩🏾‍💻 LogToFileTests\.swift:166 testTwoChannelsToTheSameFile\(\) \tThis message is for debugging
+        \#(date) ℹ️ LogToFileTests\.swift:167 testTwoChannelsToTheSameFile\(\) \tThis message is informative
+        \#(date) ℹ️ LogToFileTests\.swift:167 testTwoChannelsToTheSameFile\(\) \tThis message is informative
+        \#(date) ⚠️ LogToFileTests\.swift:168 testTwoChannelsToTheSameFile\(\) \tThis message is a warning
+        \#(date) ⚠️ LogToFileTests\.swift:168 testTwoChannelsToTheSameFile\(\) \tThis message is a warning
+        \#(date) 🆘 LogToFileTests\.swift:169 testTwoChannelsToTheSameFile\(\) \tThis message is erroneous
+        \#(date) 🆘 LogToFileTests\.swift:169 testTwoChannelsToTheSameFile\(\) \tThis message is erroneous
+        \#(date) 🆘 LogToFileTests\.swift:170 testTwoChannelsToTheSameFile\(\) \tThis error is logged but never thrown
+        \#(date) 🆘 LogToFileTests\.swift:170 testTwoChannelsToTheSameFile\(\) \tThis error is logged but never thrown
+        \#(date) 🆘 LogToFileTests\.swift:171 testTwoChannelsToTheSameFile\(\) \tThis error is logged but never thrown  \tThis is a message about the error which was logged but never thrown
+        \#(date) 🆘 LogToFileTests\.swift:171 testTwoChannelsToTheSameFile\(\) \tThis error is logged but never thrown  \tThis is a message about the error which was logged but never thrown
+        \#(date) 🆘 LogToFileTests\.swift:172 testTwoChannelsToTheSameFile\(\) \tThis error is only thrown from inside a test function
+        \#(date) 🆘 LogToFileTests\.swift:172 testTwoChannelsToTheSameFile\(\) \tThis error is only thrown from inside a test function
+        \#(date) 🚨 LogToFileTests\.swift:174 testTwoChannelsToTheSameFile\(\) \tThis message is fatal
+        \#(date) 🚨 LogToFileTests\.swift:174 testTwoChannelsToTheSameFile\(\) \tThis message is fatal
         """#)
         
-        XCTAssertEqual(1764, testFileContents.utf16.count)
+        XCTAssertEqual(2252, testFileContents.utf16.count)
         
         XCTAssertEqual(1, expectedFileContentsRegex.numberOfMatches(
             in: testFileContents,
