@@ -48,9 +48,10 @@ public class LogChannel {
     /// - Parameters:
     ///   - name:                  The human-readable name of the channel
     ///   - location:              The location where the logs are channeled to
-    ///   - lowestAllowedSeverity: _optional_ - The lowest severity which will appear in this channel's logs.
-    ///                            Defaults to `info`, since that's the lowest built-in severity which users might care
-    ///                            about if they're looking at logs, but not debugging the code itself.
+    ///   - severityFilter:        _optional_ - The filter which decides which messages appear in this channel's logs.
+    ///                            Defaults to allowing `info` and higher, since `info` is the lowest built-in severity
+    ///                            which users might care about if they're looking at logs, but not debugging the code
+    ///                            itself.
     ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log.
     ///                            Defaults to `.emoji`, so humans can more easily skim the log.
     ///
@@ -104,6 +105,18 @@ public class LogChannel {
     }
     
     
+    /// Creates a new log channel with the given configuration
+    ///
+    /// - Parameters:
+    ///   - name:                  The human-readable name of this channel
+    ///   - location:              The location to which this channel sends its log messages
+    ///   - lowestAllowedSeverity: _optional_ - The lowest severity which will appear in this channel's logs.
+    ///                            Defaults to `info`, since that's the lowest built-in severity which users might care
+    ///                            about if they're looking at logs, but not debugging the code itself.
+    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log.
+    ///                            Defaults to `.emoji`, so humans can more easily skim the log.
+    ///
+    /// - Throws: Any error which occurs while trying to create the channel
     public convenience init(
         name: String,
         location: Location,

@@ -11,12 +11,20 @@ import LazyContainers
 
 
 
-public struct CombinedLoggable: Loggable {
+/// Two lazily-combined loggables
+@usableFromInline
+internal struct CombinedLoggable: Loggable {
     
     @Lazy
     public private(set) var logStringValue: String
     
     
+    /// Lazily combines these two `Loggable`s into one
+    ///
+    /// - Parameters:
+    ///   - first:     The first `Loggable` to combine. This will always appear before the second.
+    ///   - second:    The second `Loggable` to combine. This will always appear after the first.
+    ///   - separator: The text which will separate the two messages.
     public init(first: Lazy<Loggable>, second: Lazy<Loggable>, separator: String) {
         self._logStringValue = Lazy(wrappedValue: first.wrappedValue.logStringValue + separator + second.wrappedValue.logStringValue)
     }
@@ -27,6 +35,7 @@ public struct CombinedLoggable: Loggable {
 // MARK: - Sugar
 
 public extension Loggable {
+    
     /// Combines this loggable with another
     ///
     /// - Parameters:
