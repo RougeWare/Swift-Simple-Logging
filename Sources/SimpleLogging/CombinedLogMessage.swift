@@ -22,7 +22,7 @@ Async error. Please file a bug report at https://github.com/RougeWare/Swift-Simp
 
 
 /// Two log messages, lazily combined
-public class CombinedLogMessage {
+internal class CombinedLogMessage {
     
     /// The first message to combine. This will always be printed before the second message.
     @Lazy
