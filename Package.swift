@@ -19,8 +19,14 @@ let package = Package(
             name: "SimpleLogging",
             targets: ["SimpleLogging"]),
         
+        // DEPRECATED: Does not play nice with App Store requirements
         .library(
             name: "SimpleLogging_dynamic",
+            type: .dynamic,
+            targets: ["SimpleLogging"]),
+        
+        .library(
+            name: "SimpleLoggingDynamic",
             type: .dynamic,
             targets: ["SimpleLogging"]),
     ],
