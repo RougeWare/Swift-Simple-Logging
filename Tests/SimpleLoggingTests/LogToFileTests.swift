@@ -242,14 +242,10 @@ final class LogToFileTests: XCTestCase {
 
 
 
-private enum TestError: String, Error {
+private enum TestError: String, LoggableError {
     case neverThrown = "This error is logged but never thrown"
     case thrownFromInsideTestFunction = "This error is only thrown from inside a test function"
-}
-
-
-
-extension TestError: CustomStringConvertible {
+    
     var description: String {
         return rawValue
     }

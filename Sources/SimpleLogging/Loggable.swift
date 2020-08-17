@@ -26,7 +26,7 @@ public protocol Loggable {
 
 extension Loggable where Self: CustomStringConvertible {
     @inlinable
-    public var logStringValue: String { description }
+    public var logStringValue: String { String(describing: self) }
 }
 
 
@@ -54,13 +54,3 @@ extension UInt64: Loggable {}
 extension Float32: Loggable {}
 extension Float64: Loggable {}
 extension CGFloat: Loggable {}
-
-
-
-extension NSError: Loggable {}
-
-public extension Error {
-    func loggable() -> Loggable {
-        return (self as CustomStringConvertible).description
-    }
-}
