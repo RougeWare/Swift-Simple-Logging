@@ -66,9 +66,11 @@ internal class CombinedLogMessage {
 extension CombinedLogMessage: LogMessageProtocol {
     
     /// The higher of the two severities
+    @inline(__always)
     public var severity: LogSeverity { max(first.severity, second.severity) }
     
     
     /// The older of the two dates these were logged
+    @inline(__always)
     public var dateLogged: Date { min(first.dateLogged, second.dateLogged) }
 }
