@@ -34,6 +34,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(name: "LazyContainers", url: "https://github.com/RougeWare/Swift-Lazy-Patterns.git", from: "3.1.1"),
+        .package(name: "FunctionTools", url: "https://github.com/RougeWare/Swift-Function-Tools.git", from: "1.2.3"),
     ],
     
     targets: [
@@ -41,7 +42,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "SimpleLogging",
-            dependencies: ["LazyContainers"]),
+            dependencies: ["LazyContainers", "FunctionTools"]),
         .testTarget(
             name: "SimpleLoggingTests",
             dependencies: ["SimpleLogging"]),
