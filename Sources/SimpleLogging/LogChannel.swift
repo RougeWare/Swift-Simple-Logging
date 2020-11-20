@@ -7,11 +7,15 @@
 //
 
 import Foundation
+import FunctionTools
 
 
 
 /// The channel to which to send log messages
 public class LogChannel {
+    
+    
+    // MARK: Public vars
     
     /// The human-readable name of the log channel
     public let name: String
@@ -19,11 +23,14 @@ public class LogChannel {
     /// The location of the log channel, to which log messages will be sent
     public let location: Location
     
-    /// The lowest severity which will be pushed to this channel. All others will be discarded entirely.
-    public var lowestAllowedSeverity: LogSeverity?
+    /// The severities which will be pushed to this channel. All others will be discarded entirely.
+    public var severityFilter: LogSeverityFilter
     
     /// The style of the severity part of a log line in this channel
     public let logSeverityNameStyle: SeverityNameStyle
+    
+    
+    // MARK: Private vars
     
     /// The logging options to use with each message
     private let options: LoggingOptions
@@ -31,6 +38,8 @@ public class LogChannel {
     /// A handle to a file to which we might append a log message
     private var fileHandle: FileHandle!
     
+    
+    // MARK: Init
     
     /// Creates a new log channel with the given configuration
     ///
@@ -40,23 +49,24 @@ public class LogChannel {
     /// - Parameters:
     ///   - name:                  The human-readable name of the channel
     ///   - location:              The location where the logs are channeled to
-    ///   - lowestAllowedSeverity: _optional_ - The lowest severity which will appear in this channel's logs.
-    ///                            Defaults to `info`, since that's the lowest built-in severity which users might care
-    ///                            about if they're looking at logs, but not debugging the code itself.
+    ///   - severityFilter:        _optional_ - The filter which decides which messages appear in this channel's logs.
+    ///                            Defaults to allowing `info` and higher, since `info` is the lowest built-in severity
+    ///                            which users might care about if they're looking at logs, but not debugging the code
+    ///                            itself.
     ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log.
     ///                            Defaults to `.emoji`, so humans can more easily skim the log.
     ///
     /// - Throws: Any error which occurs while trying to create the channel
-    public init(name: String,
-         location: Location,
-         lowestAllowedSeverity: LogSeverity? = .info,
-         logSeverityNameStyle: SeverityNameStyle = .emoji
-    )
-        throws
+    public init(
+        name: String,
+        location: Location,
+        severityFilter: LogSeverityFilter = .specificAndHigher(lowest: .info),
+        logSeverityNameStyle: SeverityNameStyle = .emoji)
+    throws
     {
         self.name = name
         self.location = location
-        self.lowestAllowedSeverity = lowestAllowedSeverity
+        self.severityFilter = severityFilter
         self.logSeverityNameStyle = logSeverityNameStyle
         self.options = LoggingOptions(severityStyle: logSeverityNameStyle)
         
@@ -64,8 +74,10 @@ public class LogChannel {
         case .swiftPrintDefault,
             .standardOut,
             .standardError,
-            .standardOutAndError:
+            .standardOutAndError,
+            .custom(logger: _):
             break
+            
             
         case .file(path: let path):
             let pathUrl = URL(fileURLWithPath: path)
@@ -96,6 +108,33 @@ public class LogChannel {
     }
     
     
+    /// Creates a new log channel with the given configuration
+    ///
+    /// - Parameters:
+    ///   - name:                  The human-readable name of this channel
+    ///   - location:              The location to which this channel sends its log messages
+    ///   - lowestAllowedSeverity: _optional_ - The lowest severity which will appear in this channel's logs.
+    ///                            Defaults to `info`, since that's the lowest built-in severity which users might care
+    ///                            about if they're looking at logs, but not debugging the code itself.
+    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log.
+    ///                            Defaults to `.emoji`, so humans can more easily skim the log.
+    ///
+    /// - Throws: Any error which occurs while trying to create the channel
+    public convenience init(
+        name: String,
+        location: Location,
+        lowestAllowedSeverity: LogSeverity,
+        logSeverityNameStyle: SeverityNameStyle = .emoji)
+    throws
+    {
+        try self.init(
+            name: name,
+            location: location,
+            severityFilter: .specificAndHigher(lowest: lowestAllowedSeverity),
+            logSeverityNameStyle: logSeverityNameStyle)
+    }
+    
+    
     deinit {
         fileHandle?.closeFile()
         
@@ -108,8 +147,10 @@ public class LogChannel {
 
 
 public extension LogChannel {
+    
     /// The location of a log channel, to which log messages will be sent
     enum Location {
+        
         /// The default place to which Swift's `print` function is directed
         case swiftPrintDefault
         
@@ -128,6 +169,15 @@ public extension LogChannel {
         ///
         /// - Parameter path: The path of the text file which will receive log messages
         case file(path: String)
+        
+        
+        /// Log to the given function, so you can implement some custom logging channel.
+        ///
+        /// The function is passed the fully-rendered log line, like
+        /// `2020-11-20 05:26:49.178Z ⚠️ LogToFileTests.swift:144 testLogOnlyCriticalSeveritiesToFile()     This message is a warning`
+        ///
+        /// - Parameter logger: Passed the fully-rendered log line
+        case custom(logger: Callback<String>)
     }
 }
 
@@ -145,18 +195,17 @@ public extension LogChannel {
     ///           a read-only volume)
     func append(_ message: LogMessageProtocol) throws {
         
-        if let lowestAllowedSeverity = lowestAllowedSeverity,
-            message.severity < lowestAllowedSeverity
-        {
+        guard severityFilter.allows(message) else {
             return
         }
         
         switch location {
-        case .swiftPrintDefault:    append_swiftPrintDefault(message)
-        case .standardOut:          append_standardOut(message)
-        case .standardError:        append_standardError(message)
-        case .standardOutAndError:  append_standardOutAndError(message)
-        case .file(path: let path): append_file(path: path, message: message)
+        case .swiftPrintDefault:          append_swiftPrintDefault(message)
+        case .standardOut:                append_standardOut(message)
+        case .standardError:              append_standardError(message)
+        case .standardOutAndError:        append_standardOutAndError(message)
+        case .file(path: let path):       append_file(path: path, message: message)
+        case .custom(logger: let logger): append_function(message, to: logger)
         }
     }
     
@@ -186,6 +235,12 @@ public extension LogChannel {
     private func append_file(path: String, message: LogMessageProtocol) {
         print(message.entireRenderedLogLine(options: options), to: &fileHandle)
     }
+    
+    
+    @inline(__always)
+    private func append_function(_ message: LogMessageProtocol, to logger: Callback<String>) {
+        logger(message.entireRenderedLogLine(options: options))
+    }
 }
 
 
@@ -195,5 +250,71 @@ public extension LogChannel {
     enum CreateError: Error {
         /// Thrown when you want to log to a file, but that file could not be created
         case couldNotCreateLogFile(path: String)
+    }
+}
+
+
+
+// MARK: - LogSeverityFilter
+
+/// A filter which can be applied to a log channel to specify which messages are allowed through, based on their severities
+//@dynamicMemberLookup // Would love this, but doesn't seem it works quite yet
+public enum LogSeverityFilter {
+    
+    /// All messages are allowed
+    case allowAll
+    
+    /// No messages are allowed
+    case allowNone
+    
+    /// Only allow messages of this severity
+    case only(LogSeverity)
+    
+    /// Only allow messages whose severity is in this range of severities
+    case range(ClosedRange<LogSeverity>)
+    
+    /// Allow messages with this severity and higher
+    case specificAndHigher(lowest: LogSeverity)
+    
+    
+    
+//    static subscript(dynamicMember keyPath: KeyPath<LogSeverity.Type, LogSeverity>) -> LogSeverityFilter {
+//        return .specificAndHigher(lowest: LogSeverity.self[keyPath: keyPath])
+//    }
+}
+
+
+
+public extension LogSeverityFilter {
+    
+    /// Whether or not this filter allows the given message to be logged
+    ///
+    /// - Parameter message: The message which might be allowed through this filter
+    /// - Returns: `true` iff the given message is allowed through this filter
+    @inline(__always)
+    func allows(_ message: LogMessageProtocol) -> Bool {
+        allows(message.severity)
+    }
+    
+    
+    /// Whether or not this fitler allows messages with the given severity to be logged
+    ///
+    /// - Parameter severity: A severity to check against this filter
+    /// - Returns: `true` iff messages with the given severity are allowed through this filter
+    @inlinable
+    func allows(_ severity: LogSeverity) -> Bool {
+        switch self {
+        case .allowAll: return true
+        case .allowNone: return false
+        
+        case .only(severity): return true
+        case .only(_): return false
+        
+        case .range(let range):
+            return range.contains(severity)
+            
+        case .specificAndHigher(lowest: let lowest):
+            return lowest <= severity
+        }
     }
 }

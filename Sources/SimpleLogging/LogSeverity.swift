@@ -24,6 +24,7 @@ public struct LogSeverity {
     /// - `short`: The one-character name to print in truncated logs
     /// - `long`:  The full human-readable name, to print in long-form logs or when listing severities
     /// - `emoji`: The emoji name, for when colored output in plaintext is desired
+    @usableFromInline
     internal let name: Name
     
     
@@ -105,31 +106,9 @@ public extension LogSeverity {
 
 public extension LogSeverity {
     
-    /// An **alias** for "trace", when you want your log severity names to be 4 characters. **This has no effect on the log output.**
-    @inline(__always)
-    static var trce: LogSeverity { trace }
-    
-    /// An **alias** for "debug", when you want your log severity names to be 4 characters. **This has no effect on the log output.**
-    @inline(__always)
-    static var debg: LogSeverity { debug }
-    
-    /// An **alias** for "warning", when you want your log severity names to be 4 characters. **This has no effect on the log output.**
-    @inline(__always)
-    static var warn: LogSeverity { warning }
-    
-    /// An **alias** for "error", when you want your log severity names to be 4 characters. **This has no effect on the log output.**
-    @inline(__always)
-    static var eror: LogSeverity { error }
-    
-    
     /// An **alias** for "info", when you want your log severity names to be 5 characters. **This has no effect on the log output.**
     @inline(__always)
-    static var infor: LogSeverity { info }
-    
-    /// An **alias** for "warning", when you want your log severity names to be 5 characters. **This has no effect on the log output.**
-    @inline(__always)
-    static var warng: LogSeverity { warning }
-    
+    static var inform: LogSeverity { info }
     
     /// An **alias** for "info", when you want your log severity names to be full words. **This has no effect on the log output.**
     @inline(__always)
@@ -138,6 +117,11 @@ public extension LogSeverity {
     /// An **alias** for "info", when you want your log severity names to be full words. **This has no effect on the log output.**
     @inline(__always)
     static var informative: LogSeverity { info }
+    
+    
+    /// An **alias** for "warning", when you want your log severity names to be 4 characters. **This has no effect on the log output.**
+    @inline(__always)
+    static var warn: LogSeverity { warning }
 }
 
 
@@ -160,6 +144,12 @@ public enum SeverityNameStyle {
 
 
 public extension LogSeverity {
+    
+    /// Returns the text name of this severity in the given style
+    ///
+    /// - Parameter style: The style of name to return
+    /// - Returns: The text name of this severity in the given style
+    @inlinable
     func name(style: SeverityNameStyle) -> String {
         switch style {
         case .shortName:        return name.short.description
