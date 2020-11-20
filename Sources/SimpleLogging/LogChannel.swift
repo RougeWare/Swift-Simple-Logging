@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import FunctionTools
 
 
 
@@ -73,8 +74,10 @@ public class LogChannel {
         case .swiftPrintDefault,
             .standardOut,
             .standardError,
-            .standardOutAndError:
+            .standardOutAndError,
+            .custom(logger: _):
             break
+            
             
         case .file(path: let path):
             let pathUrl = URL(fileURLWithPath: path)
@@ -144,8 +147,10 @@ public class LogChannel {
 
 
 public extension LogChannel {
+    
     /// The location of a log channel, to which log messages will be sent
     enum Location {
+        
         /// The default place to which Swift's `print` function is directed
         case swiftPrintDefault
         
@@ -164,6 +169,15 @@ public extension LogChannel {
         ///
         /// - Parameter path: The path of the text file which will receive log messages
         case file(path: String)
+        
+        
+        /// Log to the given function, so you can implement some custom logging channel.
+        ///
+        /// The function is passed the fully-rendered log line, like
+        /// `2020-11-20 05:26:49.178Z ⚠️ LogToFileTests.swift:144 testLogOnlyCriticalSeveritiesToFile()     This message is a warning`
+        ///
+        /// - Parameter logger: Passed the fully-rendered log line
+        case custom(logger: Callback<String>)
     }
 }
 
@@ -186,11 +200,12 @@ public extension LogChannel {
         }
         
         switch location {
-        case .swiftPrintDefault:    append_swiftPrintDefault(message)
-        case .standardOut:          append_standardOut(message)
-        case .standardError:        append_standardError(message)
-        case .standardOutAndError:  append_standardOutAndError(message)
-        case .file(path: let path): append_file(path: path, message: message)
+        case .swiftPrintDefault:          append_swiftPrintDefault(message)
+        case .standardOut:                append_standardOut(message)
+        case .standardError:              append_standardError(message)
+        case .standardOutAndError:        append_standardOutAndError(message)
+        case .file(path: let path):       append_file(path: path, message: message)
+        case .custom(logger: let logger): append_function(message, to: logger)
         }
     }
     
@@ -219,6 +234,12 @@ public extension LogChannel {
     
     private func append_file(path: String, message: LogMessageProtocol) {
         print(message.entireRenderedLogLine(options: options), to: &fileHandle)
+    }
+    
+    
+    @inline(__always)
+    private func append_function(_ message: LogMessageProtocol, to logger: Callback<String>) {
+        logger(message.entireRenderedLogLine(options: options))
     }
 }
 
