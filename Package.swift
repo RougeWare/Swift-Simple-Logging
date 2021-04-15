@@ -33,7 +33,7 @@ let package = Package(
     
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(name: "LazyContainers", url: "https://github.com/RougeWare/Swift-Lazy-Patterns.git", from: "3.1.1"),
+        .package(name: "LazyContainers", url: "https://github.com/RougeWare/Swift-Lazy-Patterns.git", from: "4.0.0"),
         .package(name: "FunctionTools", url: "https://github.com/RougeWare/Swift-Function-Tools.git", from: "1.2.3"),
     ],
     
