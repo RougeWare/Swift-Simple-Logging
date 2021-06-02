@@ -88,9 +88,13 @@ public extension LogSeverity {
 
 public extension LogSeverity {
     
-    /// The default log severity. If you don't care about the severity, it's safe to use this one.
+    /// The default log severity when logging. If you don't care about the severity, it's safe to use this one.
     @inline(__always)
-    static var `default`: LogSeverity { verbose }
+    static var defaultOut: LogSeverity { verbose }
+    
+    /// The default log severity when filtering a log. If you don't care about the severity, it's safe to use this one.
+    @inline(__always)
+    static var defaultFilter: LogSeverity { info }
     
     /// Trace logging - When you're trying to trace a code path. Usually scope entry and exit lines use this
     @inline(__always)
@@ -131,14 +135,18 @@ public extension LogSeverity {
 /// A style of the severity part of a log line
 public enum SeverityNameStyle {
     
-    /// The short name (just 1 character)
+    /// The short name (just 1 character). Good for when ASCII-only is required
     case shortName
     
     /// The unpadded full name. Note that this will leave a jagged edge in any log with more than 1 severity
     case unpaddedFullName
     
-    /// The emoji name (just 1 emoji character)
+    /// The emoji name (just 1 emoji character). Good for helping humans skim a log
     case emoji
+    
+    
+    /// The style that's used by default, if none is specified
+    public static var `default`: Self { emoji }
 }
 
 
