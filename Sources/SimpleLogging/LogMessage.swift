@@ -31,6 +31,6 @@ public struct LogMessage: LogMessageProtocol {
 
 extension LogMessage: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
-        self.init(severity: .default, logLine: value)
+        self.init(severity: .defaultOut, logLine: value)
     }
 }

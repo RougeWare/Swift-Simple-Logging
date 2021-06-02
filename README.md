@@ -76,9 +76,9 @@ By default, this just logs to the same place as Swift's `print` statement. Becau
 
 ```swift
 LogManager.defaultChannels += [
-    try LogChannel(name: "General Log File", location: .file(path: "/tmp/com.acme.AwesomeApp/general.log")),
-    try LogChannel(name: "Debug Log File", location: .file(path: "/tmp/com.acme.AwesomeApp/debug.log"), lowestAllowedSeverity: .debug),
-    try LogChannel(name: "Error Log File", location: .file(path: "/tmp/com.acme.AwesomeApp/errors.log"), lowestAllowedSeverity: .error, logSeverityNameStyle: .short),
+    try LogChannel.file(atPath: "/tmp/com.acme.AwesomeApp/general.log"), name: "General Log File"),
+    try LogChannel.file(atPath: "/tmp/com.acme.AwesomeApp/debug.log"), name: "Debug Log File", lowestAllowedSeverity: .debug),
+    try LogChannel.file(atPath: "/tmp/com.acme.AwesomeApp/errors.log"), name: "Error Log File", lowestAllowedSeverity: .error, logSeverityNameStyle: .short),
 ]
 ```
 

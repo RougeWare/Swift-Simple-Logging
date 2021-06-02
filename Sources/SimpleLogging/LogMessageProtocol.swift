@@ -67,7 +67,7 @@ public struct LoggingOptions {
 
 public extension LoggingOptions {
     /// The default logging options
-    static let `default` = LoggingOptions(severityStyle: .emoji)
+    static let `default` = LoggingOptions(severityStyle: .default)
 }
 
 
