@@ -88,6 +88,60 @@ public func log(severity: LogSeverity, _ any: Any,
 }
 
 
+// MARK: PII
+
+/// This allows you to safely print log lines which contain personally-identifiable information.
+///
+/// Generally, this attempts to only ever present PII to developers testing locally, never in a place where a real-world individual might have their PII recorded inadvertently.
+/// In this way, this function is also HIPAA-compliant.
+///
+/// Specifically, this is implemented by only sending messages to the Swift `print` console, and only in `DEBUG` builds.
+/// If you find that this still allows real-world users' PII to be recorded inadvertently, please file a bug report here as soon as possible:
+/// https://github.com/RougeWare/Swift-Simple-Logging/issues/new
+///
+/// - Parameters:
+///   - loggable: The PII to be logged
+///   - severity: _optional_ - The severity at which to log this PII. Defaults to `.info`
+///
+/// - Returns: The message which was logged
+@discardableResult
+@inline(__always)
+public func log(pii loggable: Loggable, severity: LogSeverity = .info,
+                file: String = #file, function: String = #function, line: UInt = #line)
+-> LogMessageProtocol {
+    log(severity: severity, loggable,
+        file: file, function: function, line: line,
+        to: [LogChannel.pii])
+}
+
+
+/// This allows you to safely print log lines which contain personally-identifiable information.
+///
+/// Generally, this attempts to only ever present PII to developers testing locally, never in a place where a real-world individual might have their PII recorded inadvertently.
+/// In this way, this function is also HIPAA-compliant.
+///
+/// Specifically, this is implemented by only sending messages to the Swift `print` console, and only in `DEBUG` builds.
+/// If you find that this still allows real-world users' PII to be recorded inadvertently, please file a bug report here as soon as possible:
+/// https://github.com/RougeWare/Swift-Simple-Logging/issues/new
+///
+/// - Parameters:
+///   - any:      The PII to be logged
+///   - severity: _optional_ - The severity at which to log this PII. Defaults to `.info`
+///
+/// - Returns: The message which was logged
+@discardableResult
+@inline(__always)
+public func log(pii any: Any, severity: LogSeverity = .info,
+                file: String = #file, function: String = #function, line: UInt = #line)
+-> LogMessageProtocol {
+    log(severity: severity, any,
+        file: file, function: function, line: line,
+        to: [LogChannel.pii])
+}
+
+
+
+
 // MARK: Verbose
 
 /// Logs the given item (and the location where you called this function) at `verbose` severity to the given channels

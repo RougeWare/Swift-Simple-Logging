@@ -59,6 +59,23 @@ log(severity: .critical, "The system is down!")
 By default, severities are represented by emoji (like ℹ️ for `info` and 🆘 for `error`) so a human can more-easily skim a log. Each can also be represented by a plaintext character or long name (for example, `debug`'s names are 👩🏾‍💻, `"d"`, and `"debug"`). You can set this this per-channel, in case your channel can't handle UTF-16, or in case you just don't like that.
 
 
+### PII ###
+
+One feature of this package is the ability to log personally-identifiable information!
+
+Generally, this feature attempts to only ever present PII to developers testing locally, never in a place where a real-world individual might have their PII recorded inadvertently.
+In this way, this channel is also HIPAA-compliant.
+ 
+ ```swift
+ log(pii: user.rawPasswordString)
+ log(pii: ssh.privateKey)
+ ```
+
+Specifically, this is implemented by only sending messages to the Swift `print` console, and only in `DEBUG` builds.
+
+If you find that this still allows real-world users' PII to be recorded inadvertently, please [file a bug report here](https://github.com/RougeWare/Swift-Simple-Logging/issues/new) as soon as possible.
+
+
 ### Channels ###
 
 By default, this just logs to the same place as Swift's `print` statement. Because enterprise apps have different needs, it can also log to `stdout`, `stderr`, and any `FileHandle`. Arbitrarily many of these can operate simultaneously. You can also specify this per-log-call or for all log calls.
