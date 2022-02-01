@@ -62,14 +62,14 @@ public func log(severity: LogSeverity, _ loggable: Loggable,
                 to channels: [LogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(
-        message: CodeLogMessage(
+        message: RawLogMessage(
             severity: severity,
-            message: loggable.logStringValue,
             codeLocation: CodeLocation(
                 fullFilePath: file,
                 functionIdentifier: function,
                 lineNumber: line
-            )
+            ),
+            message: loggable.logStringValue
         ),
         to: channels
     )

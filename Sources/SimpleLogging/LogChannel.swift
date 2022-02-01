@@ -75,7 +75,8 @@ public class LogChannel {
             .standardOut,
             .standardError,
             .standardOutAndError,
-            .custom(logger: _):
+            .custom(logger: _),
+            .customRaw(logger: _):
             break
             
             
@@ -171,13 +172,23 @@ public extension LogChannel {
         case file(path: String)
         
         
-        /// Log to the given function, so you can implement some custom logging channel.
+        /// Log to the given function, so you can implement some custom logging location.
         ///
         /// The function is passed the fully-rendered log line, like
         /// `2020-11-20 05:26:49.178Z ⚠️ LogToFileTests.swift:144 testLogOnlyCriticalSeveritiesToFile()     This message is a warning`
         ///
         /// - Parameter logger: Passed the fully-rendered log line
         case custom(logger: Callback<String>)
+        
+        
+        /// Log to the given function, so you can implement some custom logging location where you assemble it yourself.
+        ///
+        /// The function is passed completely unrendered log message components. See the documentation for `RawLogMessage` for more info.
+        ///
+        /// Log channels may choose to pre-filter messages before this is called.
+        ///
+        /// - Parameter logger: Passed the raw, unrendered log message & metadata
+        case customRaw(logger: Callback<RawLogMessage>)
     }
 }
 
@@ -200,12 +211,13 @@ public extension LogChannel {
         }
         
         switch location {
-        case .swiftPrintDefault:          append_swiftPrintDefault(message)
-        case .standardOut:                append_standardOut(message)
-        case .standardError:              append_standardError(message)
-        case .standardOutAndError:        append_standardOutAndError(message)
-        case .file(path: let path):       append_file(path: path, message: message)
-        case .custom(logger: let logger): append_function(message, to: logger)
+        case .swiftPrintDefault:             append_swiftPrintDefault(message)
+        case .standardOut:                   append_standardOut(message)
+        case .standardError:                 append_standardError(message)
+        case .standardOutAndError:           append_standardOutAndError(message)
+        case .file(path: let path):          append_file(path: path, message: message)
+        case .custom(logger: let logger):    append_function(message, to: logger)
+        case .customRaw(logger: let logger): append_function(message, to: logger)
         }
     }
     
@@ -241,6 +253,36 @@ public extension LogChannel {
     private func append_function(_ message: LogMessageProtocol, to logger: Callback<String>) {
         logger(message.entireRenderedLogLine(options: options))
     }
+    
+    
+    private func append_function(_ message: LogMessageProtocol, to logger: Callback<RawLogMessage>) {
+        if let message = message as? RawLogMessage {
+            logger(message)
+        }
+        else {
+            assertionFailure("""
+                When logging to a raw location, `message` must be a `RawLogMessage`. Instead, it was \(type(of: message)).
+                
+                In prodiction, this will be logged it as a rendered log line with `error` severity to Swift Print.
+                Production lines will have the following text inside them:
+                \(Self.errorMessage_logNonRawMessageToRawLocation)
+                
+                The entire rendered log line will be placed in the message location of the log line.
+                If `message` is a `CodeLogMessage`, then its `codeLocation` field will be used for the code location.
+                Otherwise, a dummy code location will be used, with a file path of `"error"`, a function name of `"error"`, and a line number of `0xbad_c0de` (`195936478`).
+                """)
+            
+            append_swiftPrintDefault(RawLogMessage(
+                dateLogged: message.dateLogged,
+                severity: .error,
+                codeLocation: (message as? RawLogMessage)?.codeLocation
+                    ?? CodeLocation(fullFilePath: "error", functionIdentifier: "error", lineNumber: 0xbad_c0de),
+                message: "\t \(Self.errorMessage_logNonRawMessageToRawLocation)\t \(message.entireRenderedLogLine())"))
+         }
+    }
+    
+    
+    private static let errorMessage_logNonRawMessageToRawLocation = "<<SimpleLogging: Attempted to log non-raw message to raw location>>"
 }
 
 

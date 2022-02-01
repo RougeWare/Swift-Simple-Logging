@@ -5,6 +5,15 @@ A simple, cross-platform, lightweight logging framework powered by Swift's built
 This framework was built for both out-of-the-box simplicity when you just need logging, and powerful extensibility for when your enterprise app has specific logging needs.
 
 
+## Terminology ##
+
+- **Message** - An abstract concept of something which will be logged. It generally has some text that the API user wants to log, and metadata such as where the log line is within the source code, and when the line was called.
+- **Severity** - How important a log line is. This allows for traditional severity filtering before a message is sent to a channel. 
+- **Location** - An output location where the log message is sent, like `stdout`, a specific file, a custom function, or the default place where Swift's `print` function goes.
+- **Channel** - Filters mesages based on severity and sends messages which pass its filter to a location. Any one log line can go to multiple channels. The default channels are specified in the `LogManager`.
+
+
+
 ## Examples ##
 
 ### Severities ###
@@ -61,9 +70,9 @@ By default, severities are represented by emoji (like ℹ️ for `info` and 🆘
 
 ### Channels ###
 
-By default, this just logs to the same place as Swift's `print` statement. Because enterprise apps have different needs, it can also log to `stdout`, `stderr`, and any `FileHandle`. Arbitrarily many of these can operate simultaneously. You can also specify this per-log-call or for all log calls.
+By default, this just logs to the same place as Swift's `print` statement. Because enterprise apps have different needs, it can also log to `stdout`, `stderr`, any `FileHandle`, or a custom function. Arbitrarily many of these can operate simultaneously. You can also specify this per-log-call or for all log calls.
 
-**If none is specified, the lowest allowed severity is `info`**, since that's the lowest built-in severity which users might care about if they're looking at the logs, but not debugging the code itself.
+**If none is specified, the default channel filter discards messages lower than `info` severity**, since that's the lowest built-in severity which users might care about if they're looking at the logs, but not debugging the code itself.
 
 ```swift
 LogManager.defaultChannels += [
@@ -128,6 +137,7 @@ The above lines will result in these logs:
 </td></tr>
 
 </tbody></table>
+
 
 ### Logging scope entry/exit ###
 
