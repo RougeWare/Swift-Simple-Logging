@@ -1,5 +1,5 @@
 //
-//  CodeLogMessage.swift
+//  RawLogMessage.swift
 //  SimpleLogging
 //
 //  Created by Ben Leggiero on 2020-05-18.
@@ -10,52 +10,70 @@ import Foundation
 
 
 
-/// A log message in and about the code. This is most log lines.
-public struct CodeLogMessage {
+/// The implementation of `LogMessageProtocol` which is used both for `LogLocation.customRaw`, and internally to track log messages as they flow through the process of being logged
+public struct RawLogMessage {
+    
+    /// The moment at which log function was called
     public let dateLogged: Date
+    
+    /// The severity of the log message
     public let severity: LogSeverity
-    public let message: String
     
     /// The location of the log line within the code
     public let codeLocation: CodeLocation
+    
+    /// The primary message which was logged
+    public let message: String
+    
+    /// Any additinal parameters for this message.
+    ///
+    /// This is intended to offer superfine customizability to custom log solutions. This will not be used as a placeholder for future fields and must not be treated as such
+    public let additionalParameters: [String : Any]?
     
     
     public init(
         dateLogged: Date = Date(),
         severity: LogSeverity,
+        codeLocation: CodeLocation,
         message: String,
-        codeLocation: CodeLocation
+        additionalParameters: [String : Any]? = nil
     ) {
         self.dateLogged = dateLogged
         self.severity = severity
         self.message = message
         self.codeLocation = codeLocation
+        self.additionalParameters = additionalParameters
     }
 }
 
 
 
-public extension CodeLogMessage {
-    init(severity: LogSeverity,
-         message: String,
+public extension RawLogMessage {
+    init(dateLogged: Date = Date(),
+         severity: LogSeverity,
          locationFullFilePath: String = #file,
          locationFunctionIdentifier: String = #function,
-         locationLineNumber: UInt = #line
+         locationLineNumber: UInt = #line,
+         message: String,
+         additionalParameters: [String : Any]? = nil
     ) {
         self.init(
-            dateLogged: Date(),
+            dateLogged: dateLogged,
             severity: severity,
-            message: message,
             codeLocation: CodeLocation(fullFilePath: locationFullFilePath,
                                        functionIdentifier: locationFunctionIdentifier,
-                                       lineNumber: locationLineNumber))
+                                       lineNumber: locationLineNumber),
+            message: message,
+            additionalParameters: additionalParameters
+        )
     }
 }
 
 
 
-extension CodeLogMessage: LogMessageProtocol {
+extension RawLogMessage: LogMessageProtocol {
     
+    /// The code location and the message, separated by whitespace
     public var logLine: String {
         "\(codeLocation) \t\(message)"
     }

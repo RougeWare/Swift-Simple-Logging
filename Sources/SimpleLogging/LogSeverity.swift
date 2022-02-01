@@ -64,6 +64,7 @@ extension LogSeverity: Comparable {
 // MARK: - Built-in severities
 
 public extension LogSeverity {
+    
     /// Verbose logging - The lowest severity; anything and everything might be logged at this level
     static let verbose = LogSeverity(severityValue: 1,    name: (short: "v", long: "Verbose", emoji: "💬"))
     
@@ -88,7 +89,7 @@ public extension LogSeverity {
 
 public extension LogSeverity {
     
-    /// The default log severity. If you don't care about the severity, it's safe to use this one.
+    /// The default log severity to assign to a log message. If you don't care about the severity, it's safe to use this one.
     @inline(__always)
     static var `default`: LogSeverity { verbose }
     

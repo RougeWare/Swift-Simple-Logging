@@ -10,7 +10,7 @@ import Foundation
 
 
 
-/// The default Loggable, and the return value of a log call
+/// The default implementation of the `LogMessageProtocol`, and the return value of a log call
 public struct LogMessage: LogMessageProtocol {
     public let dateLogged: Date
     public let severity: LogSeverity
