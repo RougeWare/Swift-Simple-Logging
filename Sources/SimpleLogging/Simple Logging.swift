@@ -35,9 +35,7 @@ public func log(message: LogMessageProtocol,
 
 
 
-// MARK: - Conveniences
-
-// MARK: Base log conveniences
+// MARK: - Base log
 
 /// Logs the given item (and the location where you called this function) at the given severity to the given channels
 ///
@@ -88,7 +86,7 @@ public func log(severity: LogSeverity, _ any: Any,
 }
 
 
-// MARK: Verbose
+// MARK: - Verbose
 
 /// Logs the given item (and the location where you called this function) at `verbose` severity to the given channels
 ///
@@ -128,7 +126,7 @@ public func log(verbose any: Any,
 }
 
 
-// MARK: Debug
+// MARK: - Debug
 
 /// Logs the given item (and the location where you called this function) at `debug` severity to the given channels
 ///
@@ -168,7 +166,7 @@ public func log(debug any: Any,
 }
 
 
-// MARK: Info
+// MARK: - Info
 
 /// Logs the given item (and the location where you called this function) at `info` severity to the given channels
 ///
@@ -208,7 +206,7 @@ public func log(info any: Any,
 }
 
 
-// MARK: Warning
+// MARK: - Warning
 
 /// Logs the given item (and the location where you called this function) at `warning` severity to the given channels
 ///
@@ -248,7 +246,7 @@ public func log(warning any: Any,
 }
 
 
-// MARK: Error
+// MARK: - Error
 
 /// Logs the given item (and the location where you called this function) at `error` severity to the given channels
 ///
@@ -340,7 +338,7 @@ public func log<Return>(errorIfThrows dangerousCall: @autoclosure () throws -> R
 }
 
 
-// MARK: Fatal
+// MARK: - Fatal
 
 /// Logs the given item (and the location where you called this function) at `fatal` severity to the given channels
 ///
@@ -380,7 +378,7 @@ public func log(fatal any: Any,
 }
 
 
-// MARK: Log entry / exit
+// MARK: - Log entry / exit
 
 /// Logs that the current scope was entered (and the location where you called this function) at `verbose` severity to
 /// the given channels.

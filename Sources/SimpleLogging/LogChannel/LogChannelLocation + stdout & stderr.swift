@@ -10,7 +10,9 @@ import Foundation
 
 
 
-/// Allows a log channel to send its messages to standard output (`stdout`)
+// MARK: - stdout
+
+/// Sends messages to standard output (`stdout`)
 public struct StandardOutLogChannelLocation: SingletonLogChannelLocation {
     
     public func append(_ message: LogMessageProtocol, options: LoggingOptions) {
@@ -25,7 +27,9 @@ public struct StandardOutLogChannelLocation: SingletonLogChannelLocation {
 
 
 
-/// Allows a log channel to send its messages to standard error (`stderr`)
+// MARK: - stderr
+
+/// Sends messages to standard error (`stderr`)
 public struct StandardErrorLogChannelLocation: SingletonLogChannelLocation {
     
     public func append(_ message: LogMessageProtocol, options: LoggingOptions) {
@@ -39,18 +43,47 @@ public struct StandardErrorLogChannelLocation: SingletonLogChannelLocation {
 
 
 
-/// Allows a log channel to send its messages to standard output (`stdout`) and standard error (`stderr`), simultaneously
+// MARK: - both
+
+/// Sends messages to standard output (`stdout`) and standard error (`stderr`), simultaneously
 public struct StandardOutAndErrorLogChannelLocation: SingletonLogChannelLocation {
     
     public func append(_ message: LogMessageProtocol, options: LoggingOptions) {
-        print(message.entireRenderedLogLine(options: options), to: &standardOutput)
-        print(message.entireRenderedLogLine(options: options), to: &standardError)
+        let line = message.entireRenderedLogLine(options: options)
+        print(line, to: &standardError)
+        print(line, to: &standardOutput)
     }
     
     
     
     /// The shared implementation of a `StandardOutAndErrorLogChannelLocation`
     public static let shared = Self()
+}
+
+
+
+// MARK: - Convenience statics
+
+public extension UnreliableLogChannelLocation where Self == StandardOutLogChannelLocation {
+    
+    /// Sends messages to standard output (`stdout`)
+    static var stdout: Self { .shared }
+}
+
+
+
+public extension UnreliableLogChannelLocation where Self == StandardErrorLogChannelLocation {
+    
+    /// Sends messages to standard error (`stderr`)
+    static var stderr: Self { .shared }
+}
+
+
+
+public extension UnreliableLogChannelLocation where Self == StandardOutAndErrorLogChannelLocation {
+    
+    /// Sends messages to standard output (`stdout`) and standard error (`stderr`), simultaneously
+    static var stdout_stderr: Self { .shared }
 }
 
 

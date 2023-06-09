@@ -21,7 +21,7 @@ public extension LogManager {
     
     /// The original set of default channels, kept here so we can reset the default channels
     private static let originalDefaultChannels: [AnyLogChannel] = [
-        LogChannel(name: "Swift.print", location: SwiftPrintDefaultLogChannelLocation())
+        LogChannel.swiftPrintDefault()
     ]
     
     /// The default set of channels for logging. Changing this will redirect logs which don't specify a channel

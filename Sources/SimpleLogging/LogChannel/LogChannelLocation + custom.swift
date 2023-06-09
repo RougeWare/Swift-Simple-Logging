@@ -22,7 +22,7 @@ public struct CustomLogChannelLocation: LogChannelLocation {
     /// Create a new custom log channel location
     ///
     /// The function is passed the fully-rendered log line, like
-    /// `2020-11-20 05:26:49.178Z ⚠️ LogToFileTests.swift:144 testLogOnlyCriticalSeveritiesToFile()     This message is a warning`
+    /// `"2020-11-20 05:26:49.178Z ⚠️ LogToFileTests.swift:144 testLogOnlyCriticalSeveritiesToFile()     This message is a warning"`
     ///
     /// - Parameter logger: Passed the fully-rendered log line
     init(loggingTo logger: @escaping Callback<String>) {
@@ -37,12 +37,27 @@ public struct CustomLogChannelLocation: LogChannelLocation {
 
 
 
+public extension UnreliableLogChannelLocation where Self == CustomLogChannelLocation {
+    
+    /// Log to a function, so you can implement some custom logging channel without defining a new `struct`.
+    ///
+    /// The function is passed the fully-rendered log line, like
+    /// `"2020-11-20 05:26:49.178Z ⚠️ LogToFileTests.swift:144 testLogOnlyCriticalSeveritiesToFile()     This message is a warning"`
+    ///
+    /// - Parameter logger: Passed the fully-rendered log line
+    static func custom(loggingTo logger: @escaping Callback<String>) -> Self {
+        .init(loggingTo: logger)
+    }
+}
+
+
+
 public extension LogChannel where Location == CustomLogChannelLocation {
     
     /// Log to a function, so you can implement some custom logging channel without defining a new `struct`.
     ///
     /// The function is passed the fully-rendered log line, like
-    /// `2020-11-20 05:26:49.178Z ⚠️ LogToFileTests.swift:144 testLogOnlyCriticalSeveritiesToFile()     This message is a warning`
+    /// `"2020-11-20 05:26:49.178Z ⚠️ LogToFileTests.swift:144 testLogOnlyCriticalSeveritiesToFile()     This message is a warning"`
     ///
     /// - Parameters:
     ///   - logger: Passed the fully-rendered log line
@@ -60,6 +75,7 @@ public extension LogChannel where Location == CustomLogChannelLocation {
                   lowestAllowedSeverity: lowestAllowedSeverity,
                   logSeverityNameStyle: logSeverityNameStyle)
     }
+    
     
     /// Log to a function, so you can implement some custom logging channel without defining a new `struct`.
     ///

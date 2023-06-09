@@ -40,7 +40,16 @@ public struct LogChannel<Location: UnreliableLogChannelLocation>: AnyLogChannel 
     public var severityFilter: LogSeverityFilter
     
     /// The style of the severity part of a log line in this channel
-    public let logSeverityNameStyle: SeverityNameStyle
+    @inline(__always)
+    public var logSeverityNameStyle: SeverityNameStyle {
+        get { options.severityStyle }
+        
+        @available(*, unavailable, message: """
+            Ability to change a channel's log severity was removed in SimpleLogging 0.6 to reduce complexity and improve performance.
+            See PR #17: https://github.com/RougeWare/Swift-Simple-Logging/pull/17
+            """)
+        set {  }
+    }
     
     
     /// The logging options to use with each message
@@ -54,10 +63,8 @@ public struct LogChannel<Location: UnreliableLogChannelLocation>: AnyLogChannel 
     /// - Parameters:
     ///   - name:                  The human-readable name of the channel
     ///   - location:              The location where the logs are channeled to
-    ///   - severityFilter:        _optional_ - The filter which decides which messages appear in this channel's logs. Defaults to allowing `info` and higher, since `info` is the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
+    ///   - severityFilter:        _optional_ - The filter which decides which messages appear in this channel's logs. Defaults to `.default`
     ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.default`.
-    ///
-    /// - Throws: Any error which occurs while trying to create the channel
     public init(
         name: String,
         location: Location,
@@ -67,7 +74,6 @@ public struct LogChannel<Location: UnreliableLogChannelLocation>: AnyLogChannel 
         self.name = name
         self.location = location
         self.severityFilter = severityFilter
-        self.logSeverityNameStyle = logSeverityNameStyle
         self.options = LoggingOptions(severityStyle: logSeverityNameStyle)
     }
     
@@ -79,8 +85,6 @@ public struct LogChannel<Location: UnreliableLogChannelLocation>: AnyLogChannel 
     ///   - location:              The location to which this channel sends its log messages
     ///   - lowestAllowedSeverity: _optional_ - The lowest severity which will appear in this channel's logs. Defaults to `defaultFilter`, since that's the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
     ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.default`.
-    ///
-    /// - Throws: Any error which occurs while trying to create the channel
     public init(
         name: String,
         location: Location,
@@ -97,12 +101,16 @@ public struct LogChannel<Location: UnreliableLogChannelLocation>: AnyLogChannel 
 
 
 
+// MARK: - Appending
+
 public extension LogChannel {
     
-    /// Appends the given log message to this channel. If that can't be done, (for example, if the channel's location
-    /// is a file on a read-only volume) a semantic error is thrown.
+    /// Appends the given log message to this channel if the severity filter allows. If that can't be done, (for example, if the channel's location
+    /// is a file on a read-only volume) a description of the problem, along with the logged message,is printed to the destination of Swift's built-in ``print(_:)``.
     ///
-    /// - Note: The channel might choose to hold this log message in a buffer, for instance while it waits for a log file to be created
+    /// Of course, if the severity filter does not allow this message, then no action is taken.
+    ///
+    /// - Note: The channel might choose to hold this log message in a buffer, for instance while it waits for a log file to be created, or a network call to complete.
     ///
     /// - Parameter message: The message to append to this channel
     func append(_ message: LogMessageProtocol) {
@@ -121,74 +129,22 @@ public extension LogChannel {
             """)
         }
     }
-}
-
-
-
-// MARK: - LogSeverityFilter
-
-/// A filter which can be applied to a log channel to specify which messages are allowed through, based on their severities
-//@dynamicMemberLookup // Would love this, but doesn't seem it works quite yet
-public enum LogSeverityFilter {
-    
-    /// All messages are allowed
-    case allowAll
-    
-    /// No messages are allowed
-    case allowNone
-    
-    /// Only allow messages of this severity
-    case only(LogSeverity)
-    
-    /// Only allow messages whose severity is in this range of severities
-    case range(ClosedRange<LogSeverity>)
-    
-    /// Allow messages with this severity and higher
-    case specificAndHigher(lowest: LogSeverity)
     
     
-    
-//    static subscript(dynamicMember keyPath: KeyPath<LogSeverity.Type, LogSeverity>) -> LogSeverityFilter {
-//        return .specificAndHigher(lowest: LogSeverity.self[keyPath: keyPath])
-//    }
-    
-    
-    /// The filter that's used by default, if none is specified
-    public static var `default`: Self { specificAndHigher(lowest: .info) }
-}
-
-
-
-public extension LogSeverityFilter {
-    
-    /// Whether or not this filter allows the given message to be logged
+    /// Appends the given log message to this channel if the severity filter allows.
     ///
-    /// - Parameter message: The message which might be allowed through this filter
-    /// - Returns: `true` iff the given message is allowed through this filter
-    @inline(__always)
-    func allows(_ message: LogMessageProtocol) -> Bool {
-        allows(message.severity)
-    }
-    
-    
-    /// Whether or not this fitler allows messages with the given severity to be logged
+    /// Of course, if the severity filter does not allow this message, then no action is taken.
     ///
-    /// - Parameter severity: A severity to check against this filter
-    /// - Returns: `true` iff messages with the given severity are allowed through this filter
-    @inlinable
-    func allows(_ severity: LogSeverity) -> Bool {
-        switch self {
-        case .allowAll: return true
-        case .allowNone: return false
-        
-        case .only(severity): return true
-        case .only(_): return false
-        
-        case .range(let range):
-            return range.contains(severity)
-            
-        case .specificAndHigher(lowest: let lowest):
-            return lowest <= severity
+    /// - Note: The channel might choose to hold this log message in a buffer, for instance while it waits for a log file to be created, or a network call to complete.
+    ///
+    /// - Parameter message: The message to append to this channel
+    func append(_ message: LogMessageProtocol)
+    where Location: LogChannelLocation
+    {
+        guard severityFilter.allows(message) else {
+            return
         }
+        
+        location.append(message, options: options)
     }
 }

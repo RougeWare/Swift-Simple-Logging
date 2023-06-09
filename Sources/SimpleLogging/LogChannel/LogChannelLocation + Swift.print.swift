@@ -25,6 +25,14 @@ public struct SwiftPrintDefaultLogChannelLocation: SingletonLogChannelLocation {
 
 
 
+public extension UnreliableLogChannelLocation where Self == SwiftPrintDefaultLogChannelLocation {
+    
+    /// The default place to which Swift's `print` function is directed
+    static var swiftPrint: Self { .shared }
+}
+
+
+
 public extension LogChannel
 where Location == SwiftPrintDefaultLogChannelLocation {
     

@@ -11,6 +11,23 @@ import FunctionTools
 
 
 
+// MARK: - Common
+
+/// A log channel location respresents a target for a log line within a log channel.
+public protocol LogChannelLocation: UnreliableLogChannelLocation {
+    
+    /// Logs this message to a channel
+    ///
+    /// - Note: This function shouldn't perform any filtering; the log message has already been filtered by the log channel filter before being passed to this function.
+    ///
+    /// - Parameters:
+    ///   - message: The message to send to the log channel
+    ///   - options: Options about how to render the log message
+    func append(_ message: LogMessageProtocol, options: LoggingOptions)
+}
+
+
+
 // MARK: - Base (Unreliable)
 
 /// A log channel location respresents a target for a log line within a log channel, where logging might fail
@@ -26,23 +43,6 @@ public protocol UnreliableLogChannelLocation {
     ///
     /// - Throws: If the message could not be logged
     func append(_ message: LogMessageProtocol, options: LoggingOptions) throws
-}
-
-
-
-// MARK: - Common
-
-/// A log channel location respresents a target for a log line within a log channel.
-public protocol LogChannelLocation: UnreliableLogChannelLocation {
-    
-    /// Logs this message to a channel
-    ///
-    /// - Note: This function shouldn't perform any filtering; the log message has already been filtered by the log channel filter before being passed to this function.
-    ///
-    /// - Parameters:
-    ///   - message: The message to send to the log channel
-    ///   - options: Options about how to render the log message
-    func append(_ message: LogMessageProtocol, options: LoggingOptions)
 }
 
 

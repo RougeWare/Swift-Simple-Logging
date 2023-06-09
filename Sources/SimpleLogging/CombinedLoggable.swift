@@ -11,7 +11,7 @@ import LazyContainers
 
 
 
-/// Two lazily-combined loggables
+/// Two lazily-combined ``Loggable``s
 @usableFromInline
 internal struct CombinedLoggable: Loggable {
     
