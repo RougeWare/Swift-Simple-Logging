@@ -2,7 +2,7 @@
 //  LogToFileTests.swift
 //  
 //
-//  Created by Ben Leggiero on 2020-05-19.
+//  Created by Ky Leggiero on 2020-05-19.
 //
 
 import XCTest

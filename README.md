@@ -35,7 +35,7 @@ log(debug: "TODO: Implement startup procedure")
 log(info: "Startup done")
 log(warning: "Future versions won't support the `--magically-work` flag")
 
-if username == "BenLeggiero" {
+if username == "KyLeggiero" {
     log(error: "You aren't allowed in here")
     return
 }

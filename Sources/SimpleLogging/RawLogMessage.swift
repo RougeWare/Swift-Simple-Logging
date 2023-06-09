@@ -2,8 +2,7 @@
 //  RawLogMessage.swift
 //  SimpleLogging
 //
-//  Created by Ben Leggiero on 2020-05-18.
-//  Copyright © 2020 Ben Leggiero BH-1-PS
+//  Created by Ky Leggiero on 2020-05-18.
 //
 
 import Foundation

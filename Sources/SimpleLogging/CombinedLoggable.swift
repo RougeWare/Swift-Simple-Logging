@@ -2,8 +2,7 @@
 //  CombinedLogMessage.swift
 //  SimpleLogging
 //
-//  Created by Ben Leggiero on 2020-07-22.
-//  Copyright © 2020 Ben Leggiero BH-1-PS
+//  Created by Ky Leggiero on 2020-07-22.
 //
 
 import Foundation
