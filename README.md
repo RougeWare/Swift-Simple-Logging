@@ -72,7 +72,7 @@ By default, severities are represented by emoji (like ℹ️ for `info` and 🆘
 
 By default, this just logs to the same place as Swift's `print` statement. Because enterprise apps have different needs, it can also log to `stdout`, `stderr`, any `FileHandle`, or a custom function. Arbitrarily many of these can operate simultaneously. You can also specify this per-log-call or for all log calls.
 
-**If none is specified, the default channel filter discards messages lower than `info` severity**, since that's the lowest built-in severity which users might care about if they're looking at the logs, but not debugging the code itself.
+**If none is specified, the default channel filter discards messages lower than a severity which users might care about** if they're looking at the logs, but not debugging the code itself.
 
 ```swift
 LogManager.defaultChannels += [

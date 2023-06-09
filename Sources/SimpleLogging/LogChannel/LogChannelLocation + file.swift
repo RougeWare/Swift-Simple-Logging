@@ -131,7 +131,7 @@ public extension LogChannel where Location == FileLogChannelLocation {
     ///   - fileManager:                     _optional_ - The file manager to use when performing file system operations. Defaults to `.default`.
     ///   - name:                            _optional_ - The human-readable name of the channel. Pass `nil` to generate one based on the path. Defaults to `nil`.
     ///   - severityFilter:                  _optional_ - The filter which decides which messages appear in this channel's logs. Defaults to allowing `info` and higher, since `info` is the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
-    ///   - logSeverityNameStyle:            _optional_ - The style of the severity names that appear in the log. Defaults to `.emoji`, so humans can more easily skim the log.
+    ///   - logSeverityNameStyle:            _optional_ - The style of the severity names that appear in the log. Defaults to `.default`
     ///
     /// - Throws: If the parent directory cannot be created, or if you specified that it shouldn't be but it doesn't exist, or if the log file cannot ce created, or if the file couldn't be opened for writing
     static func file(
@@ -161,8 +161,8 @@ public extension LogChannel where Location == FileLogChannelLocation {
     ///   - createIntermediatesIfNecessary: _optional_ - If the parent directory, or any of its ancestor directories, doesn't exist, then passing `true` will cause this to attempt to create it, whereas if you pass `false`, then this will throw an error if they don't exist. Defaults to `true`.
     ///   - fileManager:                     _optional_ - The file manager to use when performing file system operations. Defaults to `.default`.
     ///   - name:                            _optional_ - The human-readable name of the channel. Pass `nil` to generate one based on the path. Defaults to `nil`.
-    ///   - lowestAllowedSeverity:           _optional_ - The lowest severity which will appear in this channel's logs. Defaults to `info`, since that's the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
-    ///   - logSeverityNameStyle:            _optional_ - The style of the severity names that appear in the log. Defaults to `.emoji`, so humans can more easily skim the log.
+    ///   - lowestAllowedSeverity:           _optional_ - The lowest severity which will appear in this channel's logs. Defaults to `defaultFilter`
+    ///   - logSeverityNameStyle:            _optional_ - The style of the severity names that appear in the log. Defaults to `.default`
     ///
     /// - Throws: If the parent directory cannot be created, or if you specified that it shouldn't be but it doesn't exist, or if the log file cannot ce created, or if the file couldn't be opened for writing
     static func file(
@@ -195,7 +195,7 @@ public extension LogChannel where Location == FileLogChannelLocation {
     ///   - fileManager:                     _optional_ - The file manager to use when performing file system operations. Defaults to `.default`.
     ///   - name:                            _optional_ - The human-readable name of the channel. Pass `nil` to generate one based on the path. Defaults to `nil`.
     ///   - severityFilter:                  _optional_ - The filter which decides which messages appear in this channel's logs. Defaults to allowing `info` and higher, since `info` is the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
-    ///   - logSeverityNameStyle:            _optional_ - The style of the severity names that appear in the log. Defaults to `.emoji`, so humans can more easily skim the log.
+    ///   - logSeverityNameStyle:            _optional_ - The style of the severity names that appear in the log. Defaults to `.default`
     ///
     /// - Throws: If the parent directory cannot be created, or if you specified that it shouldn't be but it doesn't exist, or if the log file cannot ce created, or if the file couldn't be opened for writing
     static func file(
@@ -227,8 +227,8 @@ public extension LogChannel where Location == FileLogChannelLocation {
     ///   - createIntermediatesIfNecessary: _optional_ - If the parent directory, or any of its ancestor directories, doesn't exist, then passing `true` will cause this to attempt to create it, whereas if you pass `false`, then this will throw an error if they don't exist. Defaults to `true`.
     ///   - fileManager:                     _optional_ - The file manager to use when performing file system operations. Defaults to `.default`.
     ///   - name:                            _optional_ - The human-readable name of the channel. Pass `nil` to generate one based on the path. Defaults to `nil`.
-    ///   - lowestAllowedSeverity:           _optional_ - The lowest severity which will appear in this channel's logs. Defaults to `info`, since that's the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
-    ///   - logSeverityNameStyle:            _optional_ - The style of the severity names that appear in the log. Defaults to `.emoji`, so humans can more easily skim the log.
+    ///   - lowestAllowedSeverity:           _optional_ - The lowest severity which will appear in this channel's logs. Defaults to `defaultFilter`
+    ///   - logSeverityNameStyle:            _optional_ - The style of the severity names that appear in the log. Defaults to `.default`
     ///
     /// - Throws: If the parent directory cannot be created, or if you specified that it shouldn't be but it doesn't exist, or if the log file cannot ce created, or if the file couldn't be opened for writing
     static func file(

@@ -145,7 +145,9 @@ public enum SeverityNameStyle {
     case emoji
     
     
-    /// The style that's used by default, if none is specified
+    /// The style that's used by default, if none is specified.
+    ///
+    /// Currently set to `.emoji`, so people can more easily skim the log
     public static var `default`: Self { emoji }
 }
 

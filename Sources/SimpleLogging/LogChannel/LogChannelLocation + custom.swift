@@ -54,15 +54,15 @@ public extension UnreliableLogChannelLocation where Self == CustomLogChannelLoca
 public extension LogChannel where Location == CustomLogChannelLocation {
     
     /// Log to a function, so you can implement some custom logging channel without defining a new `struct`.
-    ///
+    /// 
     /// The function is passed the fully-rendered log line, like
     /// `"2020-11-20 05:26:49.178Z ⚠️ LogToFileTests.swift:144 testLogOnlyCriticalSeveritiesToFile()     This message is a warning"`
-    ///
+    /// 
     /// - Parameters:
-    ///   - logger: Passed the fully-rendered log line
+    ///   - logger:                Passed the fully-rendered log line
     ///   - name:                  The human-readable name of the channel
-    ///   - severityFilter:        _optional_ - The filter which decides which messages appear in this channel's logs. Defaults to allowing `info` and higher, since `info` is the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
-    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.emoji`, so humans can more easily skim the log.
+    ///   - lowestAllowedSeverity: _optional_ - The lowest severity level which is allowed in the log. Defaults to `.defaultFilter`
+    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.default`
     static func custom(
         name: String,
         lowestAllowedSeverity: LogSeverity,
@@ -82,10 +82,10 @@ public extension LogChannel where Location == CustomLogChannelLocation {
     /// `2020-11-20 05:26:49.178Z ⚠️ LogToFileTests.swift:144 testLogOnlyCriticalSeveritiesToFile()     This message is a warning`
     ///
     /// - Parameters:
-    ///   - logger: Passed the fully-rendered log line
+    ///   - logger:                Passed the fully-rendered log line
     ///   - name:                  The human-readable name of the channel
-    ///   - severityFilter:        _optional_ - The filter which decides which messages appear in this channel's logs. Defaults to allowing `info` and higher, since `info` is the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
-    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.emoji`, so humans can more easily skim the log.
+    ///   - severityFilter:        _optional_ - The filter which decides which messages appear in this channel's logs. Defaults to `.default`
+    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.default`
     static func custom(
         name: String,
         severityFilter: LogSeverityFilter = .default,

@@ -69,7 +69,7 @@ public extension LogChannel where Location: SingletonLogChannelLocation {
     ///                            which users might care about if they're looking at logs, but not debugging the code
     ///                            itself.
     ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log.
-    ///                            Defaults to `.emoji`, so humans can more easily skim the log.
+    ///                            Defaults to `.default`
     ///
     /// - Throws: Any error which occurs while trying to create the channel
     init(name: String, lowestAllowedSeverity: LogSeverity, logSeverityNameStyle: SeverityNameStyle) {
@@ -86,7 +86,7 @@ public extension LogChannel where Location: SingletonLogChannelLocation {
     ///                            which users might care about if they're looking at logs, but not debugging the code
     ///                            itself.
     ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log.
-    ///                            Defaults to `.emoji`, so humans can more easily skim the log.
+    ///                            Defaults to `.default`
     ///
     /// - Throws: Any error which occurs while trying to create the channel
     init(name: String, severityFilter: LogSeverityFilter, logSeverityNameStyle: SeverityNameStyle) {

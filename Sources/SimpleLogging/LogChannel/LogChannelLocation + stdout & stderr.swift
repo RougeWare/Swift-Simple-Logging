@@ -96,7 +96,7 @@ public extension LogChannel {
     /// - Parameters:
     ///   - name:                  _optional_ - The human-readable name of the channel. Defaults to `stdout`
     ///   - severityFilter:        _optional_ - The filter which decides which messages appear in this channel's logs. Defaults to allowing `info` and higher, since `info` is the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
-    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.emoji`, so humans can more easily skim the log.
+    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.default`
     static func standardOut(name: String = "stdout", severityFilter: LogSeverityFilter = .default, logSeverityNameStyle: SeverityNameStyle = .default) -> Self
     where Location == StandardOutLogChannelLocation {
         Self.init(name: name, severityFilter: severityFilter, logSeverityNameStyle: logSeverityNameStyle)
@@ -108,7 +108,7 @@ public extension LogChannel {
     /// - Parameters:
     ///   - name:                  _optional_ - The human-readable name of the channel. Defaults to `stdout`
     ///   - severityFilter:        _optional_ - The filter which decides which messages appear in this channel's logs. Defaults to allowing `info` and higher, since `info` is the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
-    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.emoji`, so humans can more easily skim the log.
+    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.default`
     static func standardError(name: String = "stderr", severityFilter: LogSeverityFilter = .default, logSeverityNameStyle: SeverityNameStyle = .default) -> Self
     where Location == StandardErrorLogChannelLocation {
         Self.init(name: name, severityFilter: severityFilter, logSeverityNameStyle: logSeverityNameStyle)
@@ -120,7 +120,7 @@ public extension LogChannel {
     /// - Parameters:
     ///   - name:                  _optional_ - The human-readable name of the channel. Defaults to `stdout`
     ///   - severityFilter:        _optional_ - The filter which decides which messages appear in this channel's logs. Defaults to allowing `info` and higher, since `info` is the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
-    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.emoji`, so humans can more easily skim the log.
+    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.default`
     static func standardOutAndError(name: String = "stdout & stderr", severityFilter: LogSeverityFilter = .default, logSeverityNameStyle: SeverityNameStyle = .default) -> Self
     where Location == StandardOutAndErrorLogChannelLocation {
         Self.init(name: name, severityFilter: severityFilter, logSeverityNameStyle: logSeverityNameStyle)
@@ -133,8 +133,8 @@ public extension LogChannel {
     ///
     /// - Parameters:
     ///   - name:                  The human-readable name of this channel
-    ///   - lowestAllowedSeverity: _optional_ - The lowest severity which will appear in this channel's logs. Defaults to `.default`, since that's the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
-    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.emoji`, so humans can more easily skim the log.
+    ///   - lowestAllowedSeverity: _optional_ - The lowest severity which will appear in this channel's logs. Defaults to `.defaultFilter`
+    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.default`
     static func standardOut(name: String = "stdout", lowestAllowedSeverity: LogSeverity, logSeverityNameStyle: SeverityNameStyle = .default) -> Self
     where Location == StandardOutLogChannelLocation {
         Self.init(name: name, lowestAllowedSeverity: lowestAllowedSeverity, logSeverityNameStyle: logSeverityNameStyle)
@@ -145,8 +145,8 @@ public extension LogChannel {
     ///
     /// - Parameters:
     ///   - name:                  The human-readable name of this channel
-    ///   - lowestAllowedSeverity: _optional_ - The lowest severity which will appear in this channel's logs. Defaults to `.default`, since that's the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
-    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.emoji`, so humans can more easily skim the log.   
+    ///   - lowestAllowedSeverity: _optional_ - The lowest severity which will appear in this channel's logs. Defaults to `.defaultFilter`
+    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.default`
     static func standardError(name: String = "stderr", lowestAllowedSeverity: LogSeverity, logSeverityNameStyle: SeverityNameStyle = .default) -> Self
     where Location == StandardErrorLogChannelLocation {
         Self.init(name: name, lowestAllowedSeverity: lowestAllowedSeverity, logSeverityNameStyle: logSeverityNameStyle)
@@ -157,8 +157,8 @@ public extension LogChannel {
     ///
     /// - Parameters:
     ///   - name:                  The human-readable name of this channel
-    ///   - lowestAllowedSeverity: _optional_ - The lowest severity which will appear in this channel's logs. Defaults to `.default`, since that's the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
-    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.emoji`, so humans can more easily skim the log.
+    ///   - lowestAllowedSeverity: _optional_ - The lowest severity which will appear in this channel's logs. Defaults to `.defaultFilter`
+    ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.default`
     static func standardOutAndError(name: String = "stdout & stderr", lowestAllowedSeverity: LogSeverity, logSeverityNameStyle: SeverityNameStyle = .default) -> Self
     where Location == StandardOutAndErrorLogChannelLocation {
         Self.init(name: name, lowestAllowedSeverity: lowestAllowedSeverity, logSeverityNameStyle: logSeverityNameStyle)

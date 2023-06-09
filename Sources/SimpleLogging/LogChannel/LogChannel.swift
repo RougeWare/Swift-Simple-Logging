@@ -47,7 +47,9 @@ public struct LogChannel<Location: UnreliableLogChannelLocation>: AnyLogChannel 
             Ability to change a channel's log severity was removed in SimpleLogging 0.6 to reduce complexity and improve performance.
             See PR #17: https://github.com/RougeWare/Swift-Simple-Logging/pull/17
             """)
-        set {  }
+        set {
+            null(newValue)
+        }
     }
     
     
@@ -82,7 +84,7 @@ public struct LogChannel<Location: UnreliableLogChannelLocation>: AnyLogChannel 
     /// - Parameters:
     ///   - name:                  The human-readable name of this channel
     ///   - location:              The location to which this channel sends its log messages
-    ///   - lowestAllowedSeverity: _optional_ - The lowest severity which will appear in this channel's logs. Defaults to `defaultFilter`, since that's the lowest built-in severity which users might care about if they're looking at logs, but not debugging the code itself.
+    ///   - lowestAllowedSeverity: _optional_ - The lowest severity which will appear in this channel's logs. Defaults to `defaultFilter`
     ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.default`.
     public init(
         name: String,
