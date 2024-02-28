@@ -2,8 +2,7 @@
 //  LogMessage.swift
 //  SimpleLogging
 //
-//  Created by Ben Leggiero on 2020-05-18.
-//  Copyright © 2020 Ben Leggiero BH-1-PS
+//  Created by Ky Leggiero on 2020-05-18.
 //
 
 import Foundation
@@ -31,6 +30,6 @@ public struct LogMessage: LogMessageProtocol {
 
 extension LogMessage: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
-        self.init(severity: .default, logLine: value)
+        self.init(severity: .defaultOut, logLine: value)
     }
 }

@@ -2,8 +2,7 @@
 //  LoggableError.swift
 //  SimpleLogging
 //
-//  Created by Ben Leggiero on 2020-08-16.
-//  Copyright © 2020 Ben Leggiero BH-1-PS
+//  Created by Ky Leggiero on 2020-08-16.
 //
 
 import Foundation

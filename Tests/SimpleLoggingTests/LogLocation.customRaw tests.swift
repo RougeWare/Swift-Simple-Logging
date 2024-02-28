@@ -23,9 +23,9 @@ final class LogLocation_customRaw_Tests: XCTestCase {
         var counter: UInt = 0
         var loggedLines: [String] = []
         
-        let testLogChannel = try LogChannel(
+        let testLogChannel = LogChannel(
             name: "Log Raw Test",
-            location: .customRaw(logger: { result in
+            location: .customRaw(loggingTo: { result in
                 counter += 1
                 loggedLines.append(
                     "\(counter):: date: \(result.dateLogged), severity: \(result.severity), codeLocation: \(result.codeLocation) message: \(result.message), also: \(result.additionalParameters?.description ?? "nothing")"

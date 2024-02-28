@@ -35,7 +35,7 @@ log(debug: "TODO: Implement startup procedure")
 log(info: "Startup done")
 log(warning: "Future versions won't support the `--magically-work` flag")
 
-if username == "BenLeggiero" {
+if username == "KyLeggiero" {
     log(error: "You aren't allowed in here")
     return
 }
@@ -72,13 +72,13 @@ By default, severities are represented by emoji (like ℹ️ for `info` and 🆘
 
 By default, this just logs to the same place as Swift's `print` statement. Because enterprise apps have different needs, it can also log to `stdout`, `stderr`, any `FileHandle`, or a custom function. Arbitrarily many of these can operate simultaneously. You can also specify this per-log-call or for all log calls.
 
-**If none is specified, the default channel filter discards messages lower than `info` severity**, since that's the lowest built-in severity which users might care about if they're looking at the logs, but not debugging the code itself.
+**If none is specified, the default channel filter discards messages lower than a severity which users might care about** if they're looking at the logs, but not debugging the code itself.
 
 ```swift
 LogManager.defaultChannels += [
-    try LogChannel(name: "General Log File", location: .file(path: "/tmp/com.acme.AwesomeApp/general.log")),
-    try LogChannel(name: "Debug Log File", location: .file(path: "/tmp/com.acme.AwesomeApp/debug.log"), lowestAllowedSeverity: .debug),
-    try LogChannel(name: "Error Log File", location: .file(path: "/tmp/com.acme.AwesomeApp/errors.log"), lowestAllowedSeverity: .error, logSeverityNameStyle: .short),
+    try LogChannel.file(atPath: "/tmp/com.acme.AwesomeApp/general.log"), name: "General Log File"),
+    try LogChannel.file(atPath: "/tmp/com.acme.AwesomeApp/debug.log"), name: "Debug Log File", lowestAllowedSeverity: .debug),
+    try LogChannel.file(atPath: "/tmp/com.acme.AwesomeApp/errors.log"), name: "Error Log File", lowestAllowedSeverity: .error, logSeverityNameStyle: .short),
 ]
 ```
 

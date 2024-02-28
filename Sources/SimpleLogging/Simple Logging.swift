@@ -2,8 +2,7 @@
 //  Simple Logging.swift
 //  SimpleLogging
 //
-//  Created by Ben Leggiero on 2020-05-18.
-//  Copyright © 2020 Ben Leggiero BH-1-PS
+//  Created by Ky Leggiero on 2020-05-18.
 //
 
 import Foundation
@@ -23,19 +22,11 @@ public let defaultLoggedErrorAndMessageSeparator = "  \t"
 /// - Returns: _optional_ - The message which was logged
 @discardableResult
 public func log(message: LogMessageProtocol,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     
     for channel in channels {
-        do {
-            try channel.append(message)
-        }
-        catch {
-            print("""
-            FAILED TO APPEND LOG MESSAGE TO CHANNEL "\(channel.name)" - \(error.localizedDescription):
-            \(message.entireRenderedLogLine(options: .init(severityStyle: channel.logSeverityNameStyle)))
-            """)
-        }
+        channel.append(message)
     }
     
     return message
@@ -43,9 +34,7 @@ public func log(message: LogMessageProtocol,
 
 
 
-// MARK: - Conveniences
-
-// MARK: Base log conveniences
+// MARK: - Base log
 
 /// Logs the given item (and the location where you called this function) at the given severity to the given channels
 ///
@@ -59,7 +48,7 @@ public func log(message: LogMessageProtocol,
 @inlinable
 public func log(severity: LogSeverity, _ loggable: Loggable,
                 file: String = #file, function: String = #function, line: UInt = #line,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(
         message: RawLogMessage(
@@ -88,7 +77,7 @@ public func log(severity: LogSeverity, _ loggable: Loggable,
 @inline(__always)
 public func log(severity: LogSeverity, _ any: Any,
                 file: String = #file, function: String = #function, line: UInt = #line,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(severity: severity, "\(any)" as Loggable,
         file: file, function: function, line: line,
@@ -96,7 +85,7 @@ public func log(severity: LogSeverity, _ any: Any,
 }
 
 
-// MARK: Verbose
+// MARK: - Verbose
 
 /// Logs the given item (and the location where you called this function) at `verbose` severity to the given channels
 ///
@@ -109,7 +98,7 @@ public func log(severity: LogSeverity, _ any: Any,
 @inline(__always)
 public func log(verbose loggable: Loggable,
                 file: String = #file, function: String = #function, line: UInt = #line,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(severity: .verbose, loggable,
         file: file, function: function, line: line,
@@ -128,7 +117,7 @@ public func log(verbose loggable: Loggable,
 @inline(__always)
 public func log(verbose any: Any,
                 file: String = #file, function: String = #function, line: UInt = #line,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(severity: .verbose, any,
         file: file, function: function, line: line,
@@ -136,7 +125,7 @@ public func log(verbose any: Any,
 }
 
 
-// MARK: Debug
+// MARK: - Debug
 
 /// Logs the given item (and the location where you called this function) at `debug` severity to the given channels
 ///
@@ -149,7 +138,7 @@ public func log(verbose any: Any,
 @inline(__always)
 public func log(debug loggable: Loggable,
                 file: String = #file, function: String = #function, line: UInt = #line,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(severity: .debug, loggable,
         file: file, function: function, line: line,
@@ -168,7 +157,7 @@ public func log(debug loggable: Loggable,
 @inline(__always)
 public func log(debug any: Any,
                 file: String = #file, function: String = #function, line: UInt = #line,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(severity: .debug, any,
         file: file, function: function, line: line,
@@ -176,7 +165,7 @@ public func log(debug any: Any,
 }
 
 
-// MARK: Info
+// MARK: - Info
 
 /// Logs the given item (and the location where you called this function) at `info` severity to the given channels
 ///
@@ -189,7 +178,7 @@ public func log(debug any: Any,
 @inline(__always)
 public func log(info loggable: Loggable,
                 file: String = #file, function: String = #function, line: UInt = #line,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(severity: .info, loggable,
         file: file, function: function, line: line,
@@ -208,7 +197,7 @@ public func log(info loggable: Loggable,
 @inline(__always)
 public func log(info any: Any,
                 file: String = #file, function: String = #function, line: UInt = #line,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(severity: .info, any,
         file: file, function: function, line: line,
@@ -216,7 +205,7 @@ public func log(info any: Any,
 }
 
 
-// MARK: Warning
+// MARK: - Warning
 
 /// Logs the given item (and the location where you called this function) at `warning` severity to the given channels
 ///
@@ -229,7 +218,7 @@ public func log(info any: Any,
 @inline(__always)
 public func log(warning loggable: Loggable,
                 file: String = #file, function: String = #function, line: UInt = #line,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(severity: .warning, loggable,
         file: file, function: function, line: line,
@@ -248,7 +237,7 @@ public func log(warning loggable: Loggable,
 @inline(__always)
 public func log(warning any: Any,
                 file: String = #file, function: String = #function, line: UInt = #line,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(severity: .warning, any,
         file: file, function: function, line: line,
@@ -256,7 +245,7 @@ public func log(warning any: Any,
 }
 
 
-// MARK: Error
+// MARK: - Error
 
 /// Logs the given item (and the location where you called this function) at `error` severity to the given channels
 ///
@@ -269,7 +258,7 @@ public func log(warning any: Any,
 @inline(__always)
 public func log(error loggable: Loggable,
                 file: String = #file, function: String = #function, line: UInt = #line,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(severity: .error, loggable,
         file: file, function: function, line: line,
@@ -288,7 +277,7 @@ public func log(error loggable: Loggable,
 @inline(__always)
 public func log(error any: Any,
                 file: String = #file, function: String = #function, line: UInt = #line,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(severity: .error, any,
         file: file, function: function, line: line,
@@ -310,7 +299,7 @@ public func log(error any: Any,
 @inlinable
 public func log(error: Error,
                 _ message: Loggable, separator: String = defaultLoggedErrorAndMessageSeparator,
-                to channels: [LogChannel] = LogManager.defaultChannels,
+                to channels: [AnyLogChannel] = LogManager.defaultChannels,
                 file: String = #file, function: String = #function, line: UInt = #line)
 -> LogMessageProtocol
 {
@@ -333,7 +322,7 @@ public func log(error: Error,
 @inlinable
 public func log<Return>(errorIfThrows dangerousCall: @autoclosure () throws -> Return,
                         backup: @autoclosure () -> Return,
-                        to channels: [LogChannel] = LogManager.defaultChannels,
+                        to channels: [AnyLogChannel] = LogManager.defaultChannels,
                         file: String = #file, function: String = #function, line: UInt = #line)
 -> Return {
     do {
@@ -348,7 +337,7 @@ public func log<Return>(errorIfThrows dangerousCall: @autoclosure () throws -> R
 }
 
 
-// MARK: Fatal
+// MARK: - Fatal
 
 /// Logs the given item (and the location where you called this function) at `fatal` severity to the given channels
 ///
@@ -361,7 +350,7 @@ public func log<Return>(errorIfThrows dangerousCall: @autoclosure () throws -> R
 @inline(__always)
 public func log(fatal loggable: Loggable,
                 file: String = #file, function: String = #function, line: UInt = #line,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(severity: .fatal, loggable,
         file: file, function: function, line: line,
@@ -380,7 +369,7 @@ public func log(fatal loggable: Loggable,
 @inline(__always)
 public func log(fatal any: Any,
                 file: String = #file, function: String = #function, line: UInt = #line,
-                to channels: [LogChannel] = LogManager.defaultChannels)
+                to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(severity: .fatal, any,
         file: file, function: function, line: line,
@@ -388,7 +377,7 @@ public func log(fatal any: Any,
 }
 
 
-// MARK: Log entry / exit
+// MARK: - Log entry / exit
 
 /// Logs that the current scope was entered (and the location where you called this function) at `verbose` severity to
 /// the given channels.
@@ -409,7 +398,7 @@ public func log(fatal any: Any,
 @discardableResult
 @inline(__always)
 public func logEntry(file: String = #file, function: String = #function, line: UInt = #line,
-                     to channels: [LogChannel] = LogManager.defaultChannels)
+                     to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(verbose: "Entry",
         file: file, function: function, line: line,
@@ -436,7 +425,7 @@ public func logEntry(file: String = #file, function: String = #function, line: U
 @discardableResult
 @inline(__always)
 public func logExit(file: String = #file, function: String = #function, line: UInt = #line,
-                    to channels: [LogChannel] = LogManager.defaultChannels)
+                    to channels: [AnyLogChannel] = LogManager.defaultChannels)
 -> LogMessageProtocol {
     log(verbose: "Exit",
         file: file, function: function, line: line,
