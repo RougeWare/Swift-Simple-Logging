@@ -13,14 +13,11 @@ import FunctionTools
 /// A channel to which log messages can be sent
 public protocol AnyLogChannel {
     
-    /// Appends the given log message to this channel. If that can't be done, (for example, if the channel's location
-    /// is a file on a read-only volume) a semantic error is thrown.
+    /// Appends the given log message to this channel.
     ///
     /// - Note: The channel might choose to hold this log message in a buffer, for instance while it waits for a log file to be created
     ///
     /// - Parameter message: The message to append to this channel
-    /// - Throws: a semantic error if the message can't be logged (for example, if the channel's location is a file on
-    ///           a read-only volume)
     func append(_ message: LogMessageProtocol)
 }
 

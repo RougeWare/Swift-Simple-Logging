@@ -31,7 +31,7 @@ public struct CustomRawLogChannelLocation: LogChannelLocation {
     /// Log channels may choose to pre-filter messages before that function is called.
     ///
     /// - Parameter logger: Passed the raw, unrendered log message & metadata
-    init(loggingTo logger: @escaping Callback<RawLogMessage>) {
+    public init(loggingTo logger: @escaping Callback<RawLogMessage>) {
         self.logger = logger
     }
     
@@ -110,17 +110,18 @@ public extension LogChannel where Location == CustomRawLogChannelLocation {
     }
     
     
-    /// Log to a function, so you can implement some custom logging channel without defining a new `struct`.
+    /// Log to a function, so you can implement some custom logging location where you assemble it yourself.
     ///
-    /// The function is passed the fully-rendered log line, like
-    /// `2020-11-20 05:26:49.178Z ⚠️ LogToFileTests.swift:144 testLogOnlyCriticalSeveritiesToFile()     This message is a warning`
+    /// The function is passed completely unrendered log message components. See the documentation for `RawLogMessage` for more info.
+    ///
+    /// Log channels may choose to pre-filter messages before that function is called.
     ///
     /// - Parameters:
     ///   - name:                  The human-readable name of the channel
     ///   - severityFilter:        _optional_ - The filter which decides which messages appear in this channel's logs. Defaults to `.default`
     ///   - logSeverityNameStyle:  _optional_ - The style of the severity names that appear in the log. Defaults to `.default`
     ///   - logger:                Passed the raw, unrendered log message & metadata
-    static func custom(
+    static func customRaw(
         name: String,
         severityFilter: LogSeverityFilter = .default,
         logSeverityNameStyle: SeverityNameStyle = .default,
